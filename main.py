@@ -427,10 +427,10 @@ async def cb(_, query: CallbackQuery):
             <b>» ETA</b> : {time_formatter(eta)}
             """
 
-                   await query.message.edit_text(text)
+                    await query.message.edit_text(text)
 
-               except:
-                   pass
+                except:
+                    pass
 
             file_path = await msg.download(file_name=file.file_name, progress=dprog)
 
