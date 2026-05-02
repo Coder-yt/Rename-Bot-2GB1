@@ -9,22 +9,23 @@ import os
 
 def add_metadata(input_path, output_path, title="", author="", description=""):
     try:
-        stream = ffmpeg.input(input_path)
-
-        stream = ffmpeg.output(
-            stream,
-            output_path,
-            codec="copy",
-            metadata=f"title={title}",
-            metadata=f"artist={author}",
-            metadata=f"description={description}"
+        (
+            ffmpeg
+            .input(input_path)
+            .output(
+                output_path,
+                codec="copy",
+                metadata=f"title={title}",
+                metadata=f"artist={author}",
+                metadata=f"comment={description}"
+            )
+            .run(overwrite_output=True)
         )
 
-        ffmpeg.run(stream, overwrite_output=True)
         return output_path
 
     except Exception as e:
-        print("FFmpeg error:", e)
+        print("FFmpeg Error:", e)
         return input_path
 
 # ------------------------- #
