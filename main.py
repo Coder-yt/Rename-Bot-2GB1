@@ -429,9 +429,9 @@ async def cb(_, query: CallbackQuery):
             except:
                 pass
 
-     except Exception as e:
-         print("Callback Error:", e)
-         await query.answer("Error ⚠️", show_alert=True)
+            except Exception as e:
+                    print("Callback Error:", e)
+                    await query.answer("Error ⚠️", show_alert=True)
                 
 # ---------------- RUN ----------------
 keep_alive()
