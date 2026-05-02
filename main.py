@@ -73,17 +73,25 @@ async def del_caption(_, msg):
     await msg.reply("Deleted")
 
 # ---------------- PREFIX / SUFFIX ----------------
-@bot.on_message(filters.command("set_prefix"))
-async def set_prefix(_, msg):
-    p = msg.text.split(None, 1)[1]
-    await set_user(msg.from_user.id, {"prefix": p})
-    await msg.reply("Prefix set")
+@bot.on_message(filters.command("see_prefix"))
+async def see_prefix(_, msg):
+    user = await get_user(msg.from_user.id) or {}
+    await msg.reply(user.get("prefix", "Not set"))
 
-@bot.on_message(filters.command("set_suffix"))
-async def set_suffix(_, msg):
-    s = msg.text.split(None, 1)[1]
-    await set_user(msg.from_user.id, {"suffix": s})
-    await msg.reply("Suffix set")
+@bot.on_message(filters.command("del_prefix"))
+async def del_prefix(_, msg):
+    await set_user(msg.from_user.id, {"prefix": ""})
+    await msg.reply("Deleted prefix")
+
+@bot.on_message(filters.command("see_suffix"))
+async def see_suffix(_, msg):
+    user = await get_user(msg.from_user.id) or {}
+    await msg.reply(user.get("suffix", "Not set"))
+
+@bot.on_message(filters.command("del_suffix"))
+async def del_suffix(_, msg):
+    await set_user(msg.from_user.id, {"suffix": ""})
+    await msg.reply("Deleted suffix")
 
 # ---------------- METADATA ----------------
 @bot.on_message(filters.command("metadata"))
@@ -114,6 +122,17 @@ async def metadata(_, msg):
 """
 
     await msg.reply(text)
+
+# -----------MY PlAN-------------- #
+@bot.on_message(filters.command("myplan"))
+async def myplan(_, msg):
+    user = await get_user(msg.from_user.id) or {}
+    status = "Premium" if user.get("premium") else "Free"
+    await msg.reply(f"Your plan: {status}")
+
+@bot.on_message(filters.command("plans"))
+async def plans(_, msg):
+    await msg.reply("Upgrade to Premium Plan 🚀")
 
 # ---------------- METADATA SETTERS ----------------
 @bot.on_message(filters.command("setartist"))
@@ -156,10 +175,19 @@ async def setvideo(_, msg):
     await msg.reply("Video metadata saved")
 
 # ---------------- THUMB ----------------
-@bot.on_message(filters.photo)
-async def save_thumb(_, msg):
-    await set_user(msg.from_user.id, {"thumb": msg.photo.file_id})
-    await msg.reply("Thumbnail saved")
+@bot.on_message(filters.command("view_thumb"))
+async def view_thumb(_, msg):
+    user = await get_user(msg.from_user.id) or {}
+    thumb = user.get("thumb")
+    if thumb:
+        await msg.reply_photo(thumb)
+    else:
+        await msg.reply("No thumbnail")
+
+@bot.on_message(filters.command("del_thumb"))
+async def del_thumb(_, msg):
+    await set_user(msg.from_user.id, {"thumb": ""})
+    await msg.reply("Thumbnail deleted")
 
 # ---------------- RENAME CORE + FFMPEG ----------------
 @bot.on_message(filters.document | filters.video)
@@ -246,6 +274,50 @@ async def remprem(_, msg):
 @bot.on_message(filters.command("status"))
 async def status(_, msg):
     await msg.reply("Bot running 24/7 ⚡")
+
+# ----------- BAN | UNBAN -------------- #
+def is_admin(uid):
+    return uid == OWNER_ID
+
+@bot.on_message(filters.command("ban"))
+async def ban(_, msg):
+    if not is_admin(msg.from_user.id):
+        return
+    uid = int(msg.text.split()[1])
+    await set_user(uid, {"banned": True})
+    await msg.reply("User banned")
+
+@bot.on_message(filters.command("unban"))
+async def unban(_, msg):
+    if not is_admin(msg.from_user.id):
+        return
+    uid = int(msg.text.split()[1])
+    await set_user(uid, {"banned": False})
+    await msg.reply("User unbanned")
+
+# ------------LOGS------------- #
+@bot.on_message(filters.command("logs"))
+async def logs(_, msg):
+    if msg.from_user.id != OWNER_ID:
+        return
+    await msg.reply("Logs system active (connect DB logging if needed)")
+
+# -------------BROADCAST------------ #
+@bot.on_message(filters.command("broadcast"))
+async def broadcast(_, msg):
+    if msg.from_user.id != OWNER_ID:
+        return
+
+    text = msg.text.split(None, 1)[1]
+
+    users_list = users.find({})
+    async for user in users_list:
+        try:
+            await bot.send_message(user["_id"], text)
+        except:
+            pass
+
+    await msg.reply("Broadcast sent")
 
 # ---------- Callback --------------- #
 @bot.on_callback_query()
