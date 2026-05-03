@@ -177,6 +177,7 @@ async def start(_, message):
             ]
         ])
 
+        await message.reply_text(
             await message.reply_text(
                 f"Hᴇʏ {user.mention} ♡\n\n"
                 "Wᴇʟᴄᴏᴍᴇ ᴛᴏ ᴛʜᴇ ᴍᴏꜱᴛ ᴀᴅᴠᴀɴᴄᴇᴅ Jɪɴᴡᴏᴏ Sᴜɴɢ Rᴇɴᴀᴍᴇ Bᴏᴛ!\n\n"
@@ -652,26 +653,27 @@ async def cb(_, query: CallbackQuery):
             await query.message.edit_text("❌ Process Cancelled")
             return
             
+     # ----------- Callback -------------- #
+            
         elif data in ["file", "video"]:
+
+            user_id = query.from_user.id  
 
             if await is_banned(user_id):
                 return await query.answer("🚫 Banned user", show_alert=True)
 
-            user_id = query.from_user.id
-            
             active_tasks[user_id] = True
 
             if user_id not in user_files:
                 return await query.answer("Send file again ❌", show_alert=True)
 
             msg = user_files[user_id]
-            file = msg.document or msg.video
 
-            msg = await query.message.edit_text(
+            await query.message.edit_text(
                 "⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📥 Downloading...",
-                reply_markup=InlineKeyboardMarkup([
-                   [InlineKeyboardButton("❌ Cancel", callback_data=f"cancel_{user_id}")]
-                ])
+            reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton("❌ Cancel", callback_data=f"cancel_{user_id}")]
+                    ])
             )
 
             start_time = time.time()
@@ -741,13 +743,15 @@ async def cb(_, query: CallbackQuery):
                 thumb_path = f"auto_thumb_{user_id}.jpg"
                 thumb_path = generate_video_thumb(file_path, thumb_path)
 
+                if not thumb_path or not os.path.exists(thumb_path):
+                    thumb_path = None
             await query.message.edit_text("⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📤 Uploading...")
 
             start_time = time.time()
 
             async def prog(current, total):
                 if not active_tasks.get(user_id):
-                    raise Exception("Cancelled")
+                    return 
                 try:
                     now = time.time()
                     diff = now - start_time
