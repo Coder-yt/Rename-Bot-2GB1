@@ -9,6 +9,12 @@ import asyncio
 import ffmpeg
 import psutil
 
+if not os.path.exists("downloads"):
+    os.makedirs("downloads")
+
+if not os.path.exists("thumbs"):
+    os.makedirs("thumbs")
+    
 START_TIME = time.time()
 
 # ------------------------- #
@@ -127,6 +133,45 @@ def time_formatter(seconds):
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
     return f"{h}h {m}m {s}s"
+
+import re
+
+def safe_name(name):
+    return re.sub(r'[\\\\/:*?"<>|]', '_', name)
+
+def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
+
+    import os
+
+    if user_thumb:
+        path = bot.download_media(user_thumb, file_name=f"thumb_{user_id}.jpg")
+        return path
+
+    if is_video:
+        thumb_path = f"thumb_{user_id}.jpg"
+
+        try:
+            (
+                ffmpeg
+                .input(file_path, ss=1)
+                .output(thumb_path, vframes=1)
+                .run(overwrite_output=True, quiet=True)
+            )
+            return thumb_path
+        except:
+            return None
+
+    return None
+
+def calc_progress(current, total, start_time):
+    now = time.time()
+    diff = max(now - start_time, 0.1)
+
+    percent = (current / total) * 100
+    speed = current / diff
+    eta = (total - current) / speed if speed > 0 else 0
+
+    return percent, speed, eta
 # ------------------------- #
 
 def smart_thumb(path):
@@ -435,7 +480,7 @@ async def addprem(_, msg):
     })
 
     await msg.reply(f"""
-🎉 🎉 𝗬𝗼𝘂 𝗮𝗿𝗲 𝗻𝗼𝘄 𝗮 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗨𝘀𝗲𝗿!
+🎉 𝗬𝗼𝘂 𝗮𝗿𝗲 𝗻𝗼𝘄 𝗮 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗨𝘀𝗲𝗿!
 
 👤 User ID: {uid}
 ⏳ Duration: {duration}
@@ -702,9 +747,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
                 diff = now - start_time
 
-                percent = current * 100 / total
-                speed = current / diff if diff > 0 else 0
-                eta = (total - current) / speed if speed > 0 else 0
+                percent, speed, eta = calc_progress(current, total, start_time)
 
                 filled = int(percent / 10)
                 bar = "⬢" * filled + "⬡" * (10 - filled)
@@ -729,10 +772,12 @@ async def cb(_, query: CallbackQuery):
             caption = user.get("caption", "")
 
             original_name = file.file_name if hasattr(file, "file_name") else "video.mp4"
+
+            original_name = safe_name(original_name)
+
             new_name = f"{prefix}{original_name}{suffix}"
-
             output = f"temp_{user_id}_{original_name}"
-
+            
             final = add_metadata(
                 file_path,
                 output,
@@ -745,18 +790,14 @@ async def cb(_, query: CallbackQuery):
             )
 
             thumb = user.get("thumb")
-            thumb_path = None
 
-            if thumb:
-                thumb_path = await bot.download_media(thumb, file_name=f"thumb_{user_id}.jpg")
-                thumb_path = smart_thumb(thumb_path)
-
-            elif is_video:   
-                thumb_path = f"auto_thumb_{user_id}.jpg"
-                thumb_path = generate_video_thumb(file_path, thumb_path)
-
-            if not thumb_path or not os.path.exists(thumb_path):
-                thumb_path = None
+            thumb_path = get_thumbnail(
+                bot,
+                thumb,
+                is_video,
+                file_path,
+                user_id
+            )
 
             await query.message.edit_text("⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📤 Uploading...")
 
@@ -769,9 +810,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
                 diff = now - start_time
 
-                percent = current * 100 / total
-                speed = current / diff if diff > 0 else 0
-                eta = (total - current) / speed if speed > 0 else 0
+                percent, speed, eta = calc_progress(current, total, start_time)
 
                 filled = int(percent / 10)
                 bar = "⬢" * filled + "⬡" * (10 - filled)
