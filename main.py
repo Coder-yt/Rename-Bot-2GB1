@@ -275,7 +275,18 @@ async def metadata(_, msg):
 ᴇxᴀᴍᴘʟᴇ: /settitle My Video
 """
 
-    await msg.reply(text)
+    buttons = InlineKeyboardMarkup([
+        [
+        InlineKeyboardButton("🏠 Home", callback_data="home"),
+        InlineKeyboardButton("❌ Close", callback_data="close")
+        ]
+    ])
+
+    await msg.reply(
+        text,
+        reply_markup=buttons,
+        disable_web_page_preview=True
+    )
 
 # -----------MY PlAN-------------- #
 @bot.on_message(filters.command("myplan"))
