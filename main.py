@@ -8,6 +8,11 @@ import time
 import asyncio
 import ffmpeg
 import psutil
+import datetime
+
+def log_event(text: str):
+    with open("bot_logs.txt", "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.datetime.now()}] {text}\n")
 
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
@@ -221,6 +226,8 @@ async def start(_, message):
         return await message.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
 
     await add_user(message.from_user.id)
+
+    log_event(f"User started bot: {msg.from_user.id}")
 
     user = message.from_user
 
@@ -591,6 +598,9 @@ async def ban(_, msg):
         return
     uid = int(msg.text.split()[1])
     await set_user(uid, {"banned": True})
+    
+    log_event(f"User banned: {uid}")
+    
     await msg.reply("‼️ 𝗨𝘀𝗲𝗿 𝗜𝘀 𝗕𝗮𝗻𝗻𝗲𝗱")
 
 @bot.on_message(filters.command("unban"))
@@ -599,15 +609,26 @@ async def unban(_, msg):
         return
     uid = int(msg.text.split()[1])
     await set_user(uid, {"banned": False})
+
+    log_event(f"User unbanned: {uid}")
+    
     await msg.reply("😁 𝗨𝘀𝗲𝗿 𝗜𝘀 𝗨𝗻𝗯𝗮𝗻𝗻𝗲𝗱")
 
 # ------------LOGS------------- #
 @bot.on_message(filters.command("logs"))
 async def logs(_, msg):
+
     if msg.from_user.id != OWNER_ID:
         return
-    await msg.reply("Logs system active (connect DB logging if needed)")
 
+    try:
+        with open("bot_logs.txt", "r", encoding="utf-8") as f:
+            data = f.read()[-3000:]  # last logs only
+
+        await msg.reply(f"📜 𝗕𝗢𝗧 𝗟𝗢𝗚𝗦:\n\n```{data}```")
+
+    except:
+        await msg.reply("𝗡𝗢 𝗟𝗢𝗚𝗦 𝗙𝗢𝗨𝗡𝗗 ❌")
 # -------------BROADCAST------------ #
 @bot.on_message(filters.command("broadcast"))
 async def broadcast(_, msg):
@@ -616,7 +637,7 @@ async def broadcast(_, msg):
         return
 
     if len(msg.command) < 2:
-        return await msg.reply("Usage: /broadcast message")
+        return await msg.reply("𝘁𝘆𝗽𝗲 𝘄𝗶𝘁𝗵 /broadcast 𝗺𝗲𝘀𝘀𝗮𝗴𝗲")
 
     text = msg.text.split(None, 1)[1]
 
@@ -633,12 +654,13 @@ async def broadcast(_, msg):
             success += 1
         except:
             failed += 1
+            
+    log_event(f"⏳️ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗦𝗲𝗻𝘁: {text[:30]}")
 
-    await msg.reply(
-        f"📢 Broadcast Completed ✔\n\n"
-        f"◇ Total Users: {total}\n"
-        f"◇ Successful: {success}\n"
-        f"◇ Unsuccessful: {failed}"
+        f"⏳️ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱\n\n"
+        f"◇ Tᴏᴛᴀʟ Usᴇʀs: {total}\n"
+        f"◇ Sᴜᴄᴄᴇssғᴜʟ: {success}\n"
+        f"◇ Uɴsᴜᴄᴄᴇssғᴜʟ: {failed}"
     )
 # ---------- Callback --------------- #
 @bot.on_callback_query()
@@ -678,8 +700,8 @@ async def cb(_, query: CallbackQuery):
                 text,
                 
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🏠 Home", callback_data="home")],
-                    [InlineKeyboardButton("❌ Close", callback_data="close")]
+                    [InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="home")],
+                    [InlineKeyboardButton("❌ Cʟᴏsᴇ", callback_data="close")]
                     ]),
                     disable_web_page_preview=True,
                     parse_mode="html"
@@ -688,9 +710,9 @@ async def cb(_, query: CallbackQuery):
         elif data == "source":
             await query.answer()
             await query.message.edit_text(
-                "💻 Source Code",
+                "• 𝗥𝗲𝗽𝗼 •",
         reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔗 Open Source", url="https://github.com/Naruto-Uzumaki-Yt/rename-bot")]
+            [InlineKeyboardButton("🔗 𝗢𝗽𝗲𝗻 𝗦𝗼𝘂𝗿𝗰𝗲", url="https://github.com/Naruto-Uzumaki-Yt/rename-bot")]
              ])
             )
 
@@ -729,8 +751,8 @@ async def cb(_, query: CallbackQuery):
             await query.message.edit_text(
                 text,
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🏠 Home", callback_data="home")],
-                    [InlineKeyboardButton("❌ Close", callback_data="close")]
+                    [InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="home")],
+                    [InlineKeyboardButton("❌ Cʟᴏsᴇ", callback_data="close")]
                 ])
             )
 
@@ -767,7 +789,7 @@ async def cb(_, query: CallbackQuery):
 
             active_tasks[uid] = False
 
-            await query.message.edit_text("❌ Process Cancelled")
+            await query.message.edit_text("𝗣𝗿𝗼𝗰𝗲𝘀𝘀 𝗖𝗮𝗻𝗰𝗲𝗹𝗹𝗲𝗱")
             return
             
      # ----------- Callback -------------- #
@@ -777,10 +799,10 @@ async def cb(_, query: CallbackQuery):
             user_id = query.from_user.id  
 
             if await is_banned(user_id):
-                return await query.answer("🚫 Banned user", show_alert=True)
+                return await query.answer("🚫 𝗕𝗮𝗻𝗻𝗲𝗱 𝗨𝘀𝗲𝗿", show_alert=True)
 
             if user_id not in user_files:
-                return await query.answer("Send file again ❌", show_alert=True)
+                return await query.answer("Eʀʀᴏʀ ‼️ Sᴇɴᴅ Fɪʟᴇ Aɢᴀɪɴ", show_alert=True)
 
             msg = user_files[user_id]   
 
@@ -789,10 +811,12 @@ async def cb(_, query: CallbackQuery):
             file = msg.document or msg.video
             is_video = msg.video is not None  
 
+            log_event(f"User {user_id} uploaded file: {file.file_name}")
+
             await query.message.edit_text(
-                "⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📥 Downloading...",
+                "⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...",
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("❌ Cancel", callback_data=f"cancel_{user_id}")]
+                    [InlineKeyboardButton("😞 Cᴀɴᴄᴇʟ", callback_data=f"cancel_{user_id}")]
                 ])
             )
 
@@ -811,12 +835,12 @@ async def cb(_, query: CallbackQuery):
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
                 text = f"""{bar}
- 📥 Downloading...
+ 📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
 
-<b>» Done</b> : {round(percent, 2)}%
-<b>» Size</b> : {humanbytes(current)} | {humanbytes(total)}
-<b>» Speed</b> : {humanbytes(speed)}/s
-<b>» ETA</b> : {time_formatter(eta)}
+<b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
+<b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
+<b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
+<b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
 """
 
                 await query.message.edit_text(text)
@@ -857,7 +881,7 @@ async def cb(_, query: CallbackQuery):
                 user_id
             )
 
-            await query.message.edit_text("⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📤 Uploading...")
+            await query.message.edit_text("⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📤 Uᴘʟᴏᴀᴅɪɴɢ...")
 
             start_time = time.time()
 
@@ -874,11 +898,12 @@ async def cb(_, query: CallbackQuery):
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
                 text = f"""{bar}
+ 📤 Uᴘʟᴏᴀᴅɪɴɢ...
 
-<b>» Done</b> : {round(percent, 2)}%
-<b>» Size</b> : {humanbytes(current)} | {humanbytes(total)}
-<b>» Speed</b> : {humanbytes(speed)}/s
-<b>» ETA</b> : {time_formatter(eta)}
+<b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
+<b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
+<b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
+<b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
 """
 
                 await query.message.edit_text(text)
@@ -913,7 +938,7 @@ async def cb(_, query: CallbackQuery):
 
     except Exception as e:
         print("Callback Error:", e)
-        await query.answer("Error ⚠️", show_alert=True)
+        await query.answer("Eʀʀᴏʀ ‼️, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ ᴛᴏ sᴏʟᴠᴇ ᴛʜᴇ ɪssᴜᴇ @Mr_Mohammed_29", show_alert=True)
                 
 # ---------------- RUN ----------------
 keep_alive()
