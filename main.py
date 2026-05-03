@@ -32,7 +32,7 @@ def get_memory():
 
 
 def get_ping():
-    return "200 ms"  # simple static (you can upgrade later)
+    return "200 ms"  
 
 # ------------------------- #
 
@@ -218,7 +218,7 @@ bot = Client(
 async def start(_, message):
 
     if await is_banned(message.from_user.id):
-        return await message.reply("🚫 You are banned from using this bot.")
+        return await message.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
 
     await add_user(message.from_user.id)
 
@@ -251,30 +251,52 @@ async def start(_, message):
 async def set_caption(_, msg):
 
     if await is_banned(msg.from_user.id):
-        return await msg.reply("🚫 You are banned from using this bot.")
+        return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
         
     cap = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"caption": cap})
-    await msg.reply("Caption set")
+    await msg.reply("Cᴀᴘᴛɪᴏɴ Sᴀᴠᴇᴅ ✅️")
 
 @bot.on_message(filters.command("see_caption"))
 async def see_caption(_, msg):
     user = await get_user(msg.from_user.id) or {}
-    await msg.reply(user.get("caption", "Not set"))
+    await msg.reply(user.get("caption", "Nᴏ Cᴀᴘᴛɪᴏɴ Is Tʜᴇʀᴇ, Aᴅᴅ Nᴏᴡ"))
 
 @bot.on_message(filters.command("del_caption"))
 async def del_caption(_, msg):
     await set_user(msg.from_user.id, {"caption": ""})
-    await msg.reply("Deleted")
+    await msg.reply("❌️ Cᴀᴘᴛɪᴏɴ Dᴇʟᴇᴛᴇᴅ")
 
 # ---------------- PREFIX / SUFFIX ----------------
+@bot.on_message(filters.command("set_prefix"))
+async def set_prefix(_, msg):
+
+    if len(msg.command) < 2:
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Pʀᴇғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
+
+    text = msg.text.split(None, 1)[1]
+    await set_user(msg.from_user.id, {"prefix": text})
+    await msg.reply("Pʀᴇғɪx Sᴀᴠᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ✨")
+
+
+@bot.on_message(filters.command("set_suffix"))
+async def set_suffix(_, msg):
+
+    if len(msg.command) < 2:
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜғғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
+
+    text = msg.text.split(None, 1)[1]
+    await set_user(msg.from_user.id, {"suffix": text})
+    await msg.reply("Sᴜғғɪx Sᴀᴠᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ✨")
+
+
 @bot.on_message(filters.command("see_prefix"))
 async def see_prefix(_, msg):
     user = await get_user(msg.from_user.id) or {}
     prefix = user.get("prefix")
 
     if not prefix:
-        return await msg.reply("Prefix is not set ❌")
+        return await msg.reply("Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴʏ Pʀᴇғɪx Tᴏ Sᴇᴇ")
 
     await msg.reply(f"Current prefix: `{prefix}`")
 
@@ -282,7 +304,7 @@ async def see_prefix(_, msg):
 @bot.on_message(filters.command("del_prefix"))
 async def del_prefix(_, msg):
     await set_user(msg.from_user.id, {"prefix": ""})
-    await msg.reply("Prefix deleted ✔")
+    await msg.reply("Pʀᴇғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
 
 
 @bot.on_message(filters.command("see_suffix"))
@@ -291,7 +313,7 @@ async def see_suffix(_, msg):
     suffix = user.get("suffix")
 
     if not suffix:
-        return await msg.reply("Suffix is not set ❌")
+        return await msg.reply("Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴʏ Sᴜғғɪx Tᴏ Sᴇᴇ")
 
     await msg.reply(f"Current suffix: `{suffix}`")
 
@@ -299,7 +321,7 @@ async def see_suffix(_, msg):
 @bot.on_message(filters.command("del_suffix"))
 async def del_suffix(_, msg):
     await set_user(msg.from_user.id, {"suffix": ""})
-    await msg.reply("Suffix deleted ✔")
+    await msg.reply("Sᴜғғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
 
 # ---------------- METADATA ----------------
 @bot.on_message(filters.command("metadata"))
@@ -331,8 +353,8 @@ async def metadata(_, msg):
 
     buttons = InlineKeyboardMarkup([
         [
-        InlineKeyboardButton("🏠 Home", callback_data="home"),
-        InlineKeyboardButton("❌ Close", callback_data="close")
+        InlineKeyboardButton("Hᴏᴍᴇ", callback_data="home"),
+        InlineKeyboardButton("Cʟᴏsᴇ", callback_data="close")
         ]
     ])
 
@@ -500,8 +522,8 @@ async def remprem(_, msg):
 @bot.on_message(filters.command("status"))
 async def status(_, msg):
 
-    users_count = users.count_documents({})
-
+    users_count = await users.count_documents({})
+    
     if not await get_premium_status(msg.from_user.id):
         premium = "No"
     else:
@@ -678,7 +700,7 @@ async def cb(_, query: CallbackQuery):
 
         elif data == "status_refresh":
 
-            users_count = users.count_documents({})
+            users_count = await users.count_documents({})
 
             text = f"""
         📊 𝗕𝗼𝘁 𝗦𝘁𝗮𝘁𝘂𝘀
