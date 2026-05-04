@@ -7,38 +7,34 @@
 import ffmpeg
 import os
 
-def add_metadata(input_path, output_path,
-                 title="", author="", artist="",
-                 audio="", subtitle="", video=""):
+def add_metadata(input_file, output_file, title, author, artist, audio, subtitle, video):
 
     try:
-        stream = ffmpeg.input(input_path)
+        stream = ffmpeg.input(input_file)
 
-        metadata = {}
-
-        if title: metadata["title"] = title
-        if author: metadata["artist"] = author
-        if artist: metadata["album_artist"] = artist
-        if audio: metadata["comment"] = audio
-        if subtitle: metadata["subtitle"] = subtitle
-        if video: metadata["description"] = video
-
-        out = ffmpeg.output(
+        stream = ffmpeg.output(
             stream,
-            output_path,
-            vcodec="copy",
-            acodec="copy",
-            **{f"metadata:g": f"{k}={v}" for k, v in metadata.items()}
+            output_file,
+            codec="copy",  # 🔥 NO RE-ENCODE
+            map_metadata="-1",
+
+            metadata=f"title={title}",
+            metadata:g=f"artist={artist}",
+            metadata:g=f"author={author}",
+            metadata:s:a=f"title={audio}",
+            metadata:s:s=f"title={subtitle}",
+            metadata:s:v=f"title={video}",
+
+            movflags="faststart"  # 🔥 VERY IMPORTANT
         )
 
-        ffmpeg.run(out, overwrite_output=True, quiet=True)
+        ffmpeg.run(stream, overwrite_output=True, quiet=True)
 
-        return output_path
+        return output_file
 
     except Exception as e:
-        print("FFmpeg Error:", e)
-        return input_path
-
+        print("Metadata Error:", e)
+        return input_file
 # ------------------------- #
 # Don't Remove Credit 
 # Ask Doubt @AU_Bot_Discussion 
