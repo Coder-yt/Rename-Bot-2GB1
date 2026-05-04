@@ -50,6 +50,9 @@ from pyrogram.enums import ParseMode
 
 active_tasks = {}
 
+download_last_edit = 0
+upload_last_edit = 0
+
 def parse_duration(value: str):
     value = value.lower().strip()
 
@@ -132,14 +135,16 @@ from keep_alive import keep_alive
 def humanbytes(size):
     if not size:
         return "0 B"
-    power = 2**10
+
+    power = 1024
     n = 0
     Dic_powerN = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB'}
-    while size > power:
+
+    while size >= power and n < len(Dic_powerN) - 1:
         size /= power
         n += 1
-    return str(round(size, 2)) + " " + Dic_powerN[n]
 
+    return str(round(size, 2)) + " " + Dic_powerN[n]
 
 def time_formatter(seconds):
     m, s = divmod(int(seconds), 60)
@@ -173,13 +178,21 @@ async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
     return None
 
-def calc_progress(current, total, start_time):
+def calc_progress(current, total, start_time, last_current=0, last_time=0):
     now = time.time()
+
     diff = max(now - start_time, 0.1)
 
-    percent = (current / total) * 100
-    speed = current / diff
-    eta = (total - current) / speed if speed > 0 else 0
+    # percentage
+    percent = (current / total) * 100 if total else 0
+
+    # smoother speed (difference based)
+    speed = (current - last_current) / (now - last_time) if last_time else current / diff
+    speed = max(speed, 0)
+
+    # ETA safer calculation
+    remaining = total - current
+    eta = remaining / speed if speed > 0 else 0
 
     return percent, speed, eta
 # ------------------------- #
@@ -727,7 +740,7 @@ async def cb(_, query: CallbackQuery):
         Lɪʙʀᴀʀʏ : <a href="https://pypi.org/project/Pyrogram/">Pyʀᴏɢʀᴀᴍ 2.0</a>
         Lᴀɴɢᴜᴀɢᴇ : <a href="https://www.python.org/downloads/">Pʏᴛʜᴏɴ 𝟹</a>
         Dᴀᴛᴀʙᴀsᴇ : <a href="https://www.mongodb.com/">ᴍᴏɴɢᴏ ᴅʙ</a>
-        ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Anime_Updates">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
+        ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Anime_UpdatesAU">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
         ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/AU_Bot_Discussion">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
         ʙᴜɪʟᴅ sᴛᴀᴛᴜs : <a href="https://t.me/Anime_UpdatesAU">ᴠ3 [sᴛᴀʙʟᴇ]</a>
         """
@@ -863,20 +876,28 @@ async def cb(_, query: CallbackQuery):
             log_event(f"User {user_id} uploaded file: {file.file_name}")
 
             await query.message.edit_text(
-                "⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...",
+                "📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...",
         reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton("😞 Cᴀɴᴄᴇʟ", callback_data=f"cancel_{user_id}")]
                 ])
             )
 
             start_time = time.time()
+            last_edit = 0
 
             async def dprog(current, total):
+
+                global download_last_edit
+                
                 if not active_tasks.get(user_id):
                     raise Exception("Cancelled")
 
                 now = time.time()
                 diff = now - start_time
+
+                if now - download_last_edit < 1:
+                    return
+                download_last_edit = now
 
                 percent, speed, eta = calc_progress(current, total, start_time)
 
@@ -885,7 +906,6 @@ async def cb(_, query: CallbackQuery):
 
                 text = f"""{bar}
            📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
-
            <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
            <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
            <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
@@ -944,7 +964,7 @@ async def cb(_, query: CallbackQuery):
                 thumb_path = None
 
         # -------- UPLOAD START -------- #
-            await query.message.edit_text("⬡⬡⬡⬡⬡⬡⬡⬡⬡⬡\n📤 Uᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ...")
+            await query.message.edit_text("📤 Uᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ...")
 
             start_time = time.time()
             last_edit = 0
@@ -952,16 +972,16 @@ async def cb(_, query: CallbackQuery):
             async def prog(current, total):
                 nonlocal last_edit
 
+                global upload_last_edit
+
                 if not active_tasks.get(user_id):
                     return
 
                 now = time.time()
 
-               # prevent flood
-                if now - last_edit < 1:
+                if now - upload_last_edit < 1:
                     return
-
-                last_edit = now
+                upload_last_edit = now        
 
                 percent, speed, eta = calc_progress(current, total, start_time)
 
@@ -970,7 +990,6 @@ async def cb(_, query: CallbackQuery):
 
                 text = f"""{bar}
             📤 Uᴘʟᴏᴀᴅɪɴɢ...
-
             <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
             <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
             <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
