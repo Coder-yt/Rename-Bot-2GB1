@@ -1085,8 +1085,10 @@ async def cb(_, query: CallbackQuery):
                          except Exception as e:
                              print("Dump Error:", e)
 
-            except Exception:
-                await query.message.edit_text("❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ")
+            except Exception as e:
+                await query.message.edit_text(
+                    f"❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ\n\n{str(e)}"
+                )
                 return
     
                 try:
