@@ -17,6 +17,9 @@ def log_event(text: str):
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
 
+if not os.path.exists("temp_mediainfo"):
+    os.makedirs("temp_mediainfo")
+
 if not os.path.exists("thumbs"):
     os.makedirs("thumbs")
     
@@ -81,6 +84,9 @@ def parse_duration(value: str):
 # ------------------------- #
     
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+from pymediainfo import MediaInfo
+from telegraph import Telegraph
 
 def get_home_text(user):
     return (
@@ -1269,7 +1275,7 @@ async def user_info(_, msg):
         [
             InlineKeyboardButton(
                 "🌐 Vɪᴇᴡ Pʀᴏғɪʟᴇ",
-                url=f"tg://user?id={user.id}"
+                url=f"https://t.me/{user.username}"
             )
         ]
     ])
@@ -1281,6 +1287,12 @@ async def user_info(_, msg):
 
 # ---------------- MEDIAINFO ---------------- #
 
+from pymediainfo import MediaInfo
+from telegraph import Telegraph
+
+telegraph = Telegraph()
+telegraph.create_account(short_name="MediainfoBot")
+
 @bot.on_message(filters.private & filters.command("mediainfo"))
 async def mediainfo(_, msg):
 
@@ -1288,66 +1300,75 @@ async def mediainfo(_, msg):
 
     if not replied:
         return await msg.reply(
-            "❌ Rᴇᴘʟʏ Tᴏ A Vɪᴅᴇᴏ Oʀ Dᴏᴄᴜᴍᴇɴᴛ"
+            "❌ Reply To A Video Or Document"
         )
 
     media = replied.video or replied.document
 
     if not media:
         return await msg.reply(
-            "❌ Uɴsᴜᴘᴘᴏʀᴛᴇᴅ Mᴇᴅɪᴀ"
+            "❌ Unsupported Media"
         )
 
-    file_path = await replied.download()
+    processing = await msg.reply(
+        "📄 Generating MediaInfo..."
+    )
+
+    file_path = await replied.download(
+        file_name=f"temp_mediainfo/{media.file_name}"
+    )
 
     try:
-        probe = ffmpeg.probe(file_path)
 
-        format_data = probe.get("format", {})
-        streams = probe.get("streams", [])
+        media_info = MediaInfo.parse(file_path)
 
-        video_stream = next(
-            (x for x in streams if x["codec_type"] == "video"),
-            None
-        )
-
-        audio_stream = next(
-            (x for x in streams if x["codec_type"] == "audio"),
-            None
-        )
-
-        duration = int(float(format_data.get("duration", 0)))
-        size = humanbytes(int(format_data.get("size", 0)))
+        full_info = media_info.to_data()
 
         text = f"""
-📂 Mᴇᴅɪᴀ Iɴғᴏ
+<h2>📄 MediaInfo</h2>
 
-━━━━━━━━━━━━━━━
-➣ Fɪʟᴇ Nᴀᴍᴇ:
-{media.file_name}
+📅 Date: {datetime.datetime.now().strftime("%B %d, %Y")}<br>
+By: Bot Station<br><br>
 
-━━━━━━━━━━━━━━━
-➣ Sɪᴢᴇ: {size}
-➣ Dᴜʀᴀᴛɪᴏɴ: {time_formatter(duration)}
-
-━━━━━━━━━━━━━━━
-🎬 Vɪᴅᴇᴏ Dᴇᴛᴀɪʟs
-
-➣ Cᴏᴅᴇᴄ: {video_stream.get('codec_name', 'Unknown') if video_stream else 'Unknown'}
-➣ Rᴇsᴏʟᴜᴛɪᴏɴ: {video_stream.get('width', 0)}x{video_stream.get('height', 0) if video_stream else 0}
-➣ FPS: {video_stream.get('r_frame_rate', 'Unknown') if video_stream else 'Unknown'}
-
-━━━━━━━━━━━━━━━
-🔊 Aᴜᴅɪᴏ Dᴇᴛᴀɪʟs
-
-➣ Cᴏᴅᴇᴄ: {audio_stream.get('codec_name', 'Unknown') if audio_stream else 'Unknown'}
-➣ Cʜᴀɴɴᴇʟs: {audio_stream.get('channels', 'Unknown') if audio_stream else 'Unknown'}
+📁 File:<br>
+{media.file_name}<br><br>
 """
 
-        await msg.reply_text(text)
+        for track in full_info["tracks"]:
+
+            track_type = track.get("track_type", "Unknown")
+
+            text += f"<h3>📌 {track_type}</h3>"
+
+            for key, value in track.items():
+
+                if key == "track_type":
+                    continue
+
+                if value in [None, "", "0"]:
+                    continue
+
+                text += f"<b>{key.replace('_', ' ').title()}</b>: {value}<br>"
+
+            text += "<br>"
+
+        response = telegraph.create_page(
+            title=f"MediaInfo - {media.file_name}",
+            html_content=text
+        )
+
+        url = f"https://telegra.ph/{response['path']}"
+
+        await processing.edit_text(
+            f"📄 <b>MediaInfo:</b>\n\n"
+            f"➲ Link : {url}",
+            disable_web_page_preview=False
+        )
 
     except Exception as e:
-        await msg.reply(f"❌ Eʀʀᴏʀ:\n{e}")
+        await processing.edit_text(
+            f"❌ Error:\n{e}"
+        )
 
     try:
         os.remove(file_path)
