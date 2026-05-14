@@ -1291,9 +1291,7 @@ async def user_info(_, msg):
 
 # ---------------- MEDIAINFO ---------------- #
 
-from pymediainfo import MediaInfo
-from telegraph import Telegraph
-
+telegraph = Telegraph()
 telegraph = Telegraph()
 telegraph.create_account(short_name="MediainfoBot")
 
@@ -1332,17 +1330,19 @@ async def mediainfo(_, msg):
 <b>📄 MediaInfo</b><br><br>
 
 📅 Date: {datetime.datetime.now().strftime("%B %d, %Y")}<br>
-By: Bot Station<br><br>
+🤖 Bot: @Jinwoo_Rename_bot<br><br>
 
-📁 File:<br>
+<b>📁 File Name</b><br>
 {media.file_name}<br><br>
 """
 
         for track in full_info["tracks"]:
 
-            track_type = track.get("track_type", "Unknown")
+            track_type = str(
+                track.get("track_type", "Unknown")
+            )
 
-            text += f"<b>📌 {track_type}</b><br>"
+            text += f"<b>📌 {track_type}</b><br><br>"
 
             for key, value in track.items():
 
@@ -1352,7 +1352,19 @@ By: Bot Station<br><br>
                 if value in [None, "", "0"]:
                     continue
 
-                text += f"<b>{key.replace('_', ' ').title()}</b>: {value}<br>"
+                key = str(key)
+                value = str(value)
+
+                value = (
+                    value.replace("<", "")
+                    .replace(">", "")
+                    .replace("&", "and")
+                )
+
+                text += (
+                    f"<b>{key.replace('_', ' ').title()}</b>: "
+                    f"{value}<br>"
+                )
 
             text += "<br>"
 
@@ -1364,18 +1376,20 @@ By: Bot Station<br><br>
         url = f"https://telegra.ph/{response['path']}"
 
         await processing.edit_text(
-            f"📄 <b>MediaInfo:</b>\n\n"
+            f"📄 <b>MediaInfo Generated Successfully</b>\n\n"
             f"➲ Link : {url}",
             disable_web_page_preview=False
         )
 
     except Exception as e:
+
         await processing.edit_text(
-            f"❌ Error:\n{e}"
+            f"❌ Error:\n{str(e)}"
         )
 
     try:
         os.remove(file_path)
+
     except:
         pass
 
