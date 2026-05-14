@@ -53,6 +53,11 @@ from pyrogram.enums import ParseMode
 
 active_tasks = {}
 
+# ---------------- FORCE SUB ---------------- #
+
+FORCE_SUB_CHANNEL = None
+FREE_MODE = True
+
 user_mode = {}
 
 download_last_edit = 0
@@ -263,9 +268,143 @@ bot = Client(
     bot_token=BOT_TOKEN
 )
 
+# ---------------- CHECK FORCE SUB ---------------- #
+
+async def check_force_sub(client, user_id):
+
+    global FORCE_SUB_CHANNEL
+
+    if not FORCE_SUB_CHANNEL:
+        return True
+
+    try:
+        member = await client.get_chat_member(
+            FORCE_SUB_CHANNEL,
+            user_id
+        )
+
+        if member.status in [
+            "member",
+            "administrator",
+            "creator"
+        ]:
+            return True
+
+    except:
+        pass
+
+    return False
+
+
+# ---------------- FORCE SUB COMMANDS ---------------- #
+
+@bot.on_message(filters.private & filters.command("fsub"))
+async def add_fsub(client, message):
+
+    global FORCE_SUB_CHANNEL
+
+    if message.from_user.id not in ADMINS:
+        return
+
+    if len(message.command) < 2:
+        return await message.reply_text(
+            "ᴛᴇxᴛ ᴡɪᴛʜ\n/fsub Cʜᴀɴɴᴇʟ_Usᴇʀɴᴀᴍᴇ"
+        )
+
+    channel = message.command[1]
+
+    if not channel.startswith("@"):
+        channel = "@" + channel
+
+    FORCE_SUB_CHANNEL = channel
+
+    await message.reply_text(
+        f"✅ Fᴏʀᴄᴇ Sᴜʙsᴄʀɪʙᴇᴅ Cʜᴀɴɴᴇʟ Aᴅᴅᴇᴅ\n\nCʜᴀɴɴᴇʟ : {channel}"
+    )
+
+
+@bot.on_message(filters.private & filters.command("nofsub"))
+async def remove_fsub(client, message):
+
+    global FORCE_SUB_CHANNEL
+
+    if message.from_user.id not in ADMINS:
+        return
+
+    FORCE_SUB_CHANNEL = None
+
+    await message.reply_text(
+        "✅ Fᴏʀᴄᴇ Sᴜʙsᴄʀɪʙᴇᴅ Cʜᴀɴɴᴇʟ Rᴇᴍᴏᴠᴇᴅ"
+    )
+
+# ---------------- FREE MODE ---------------- #
+
+@bot.on_message(filters.private & filters.command("freemode"))
+async def free_mode(client, message):
+
+    global FREE_MODE
+
+    if message.from_user.id not in ADMINS:
+        return
+
+    FREE_MODE = True
+
+    await message.reply_text(
+        "✅ Fʀᴇᴇ Mᴏᴅᴇ Eɴᴀʙʟᴇᴅ\n\n ○ Nᴏᴡ Usᴇʀs Cᴀɴ Usᴇ Tʜᴇ Bᴏᴛ ○"
+    )
+
+
+@bot.on_message(filters.private & filters.command("disablemode"))
+async def disable_mode(client, message):
+
+    global FREE_MODE
+
+    if message.from_user.id not in ADMINS:
+        return
+
+    FREE_MODE = False
+
+    await message.reply_text(
+        "🚫 Fʀᴇᴇ Mᴏᴅᴇ Dɪsᴀʙʟᴇᴅ\n\n ○ Nᴏᴡ Usᴇʀs Cᴀɴɴᴏᴛ Usᴇ Tʜᴇ Bᴏᴛ ○"
+    )
+
 # ---------------- START ----------------
 @bot.on_message(filters.command("start"))
 async def start(_, message):
+
+    # ---------------- DISABLE MODE ---------------- #
+
+    if not FREE_MODE:
+
+        if message.from_user.id not in ADMINS:
+            return await message.reply_text(
+                "🚫 Fʀᴇᴇ Mᴏᴅᴇ Dɪsᴀʙʟᴇᴅ Bʏ Oᴡɴᴇʀ\n\n ● Nᴏᴡ Yᴏᴜ Cᴀɴɴᴏᴛ Usᴇ Tʜɪs Bᴏᴛ ●"
+            )
+
+    # ---------------- FORCE SUB CHECK ---------------- #
+
+    if message.from_user.id not in ADMINS:
+
+        joined = await check_force_sub(
+            client,
+            message.from_user.id
+        )
+
+        if not joined:
+
+            buttons = InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "›› ʏᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴊᴏɪɴᴇᴅ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ʏᴇᴛ.",
+                        url=f"https://t.me/{FORCE_SUB_CHANNEL.replace('@', '')}"
+                    )
+                ]
+            ])
+
+            return await message.reply_text(
+                "›› ‼️ ʟᴏᴏᴋs ʟɪᴋᴇ ʏᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴊᴏɪɴᴇᴅ ᴛᴏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ʏᴇᴛ, sᴜʙsᴄʀɪʙᴇ ɴᴏw.",
+                reply_markup=buttons
+            )
 
     try:
         if await is_banned(message.from_user.id):
