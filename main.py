@@ -1138,6 +1138,13 @@ async def cb(_, query: CallbackQuery):
             except Exception:
                 pass
 
+            # -------- UPDATE LEADERBOARD -------- #
+
+            leaderboard_data["today"][user_id] += 1
+            leaderboard_data["weekly"][user_id] += 1
+            leaderboard_data["monthly"][user_id] += 1
+            leaderboard_data["alltime"][user_id] += 1
+
             await query.message.delete()
             active_tasks.pop(user_id, None)
             user_mode.pop(user_id, None)
@@ -1155,15 +1162,6 @@ leaderboard_data = {
     "monthly": defaultdict(int),
     "alltime": defaultdict(int)
 }
-
-# ---------------- UPDATE STATS ---------------- #
-# ADD THIS AFTER SUCCESSFUL UPLOAD
-
-leaderboard_data["today"][user_id] += 1
-leaderboard_data["weekly"][user_id] += 1
-leaderboard_data["monthly"][user_id] += 1
-leaderboard_data["alltime"][user_id] += 1
-
 
 # ---------------- LEADERBOARD FUNCTION ---------------- #
 
