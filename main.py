@@ -1122,6 +1122,299 @@ async def cb(_, query: CallbackQuery):
             
     except Exception as e:
        print("Callback Error:", e)
+
+# ---------------- LEADERBOARD DATA ---------------- #
+
+from collections import defaultdict
+
+leaderboard_data = {
+    "today": defaultdict(int),
+    "weekly": defaultdict(int),
+    "monthly": defaultdict(int),
+    "alltime": defaultdict(int)
+}
+
+# ---------------- UPDATE STATS ---------------- #
+# ADD THIS AFTER SUCCESSFUL UPLOAD
+
+leaderboard_data["today"][user_id] += 1
+leaderboard_data["weekly"][user_id] += 1
+leaderboard_data["monthly"][user_id] += 1
+leaderboard_data["alltime"][user_id] += 1
+
+
+# ---------------- LEADERBOARD FUNCTION ---------------- #
+
+async def generate_leaderboard(period):
+
+    data = leaderboard_data.get(period, {})
+
+    sorted_users = sorted(
+        data.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )[:20]
+
+    total_files = sum(data.values())
+
+    text = f"📈 Lᴇᴀᴅᴇʀʙᴏᴀʀᴅ: {period.upper()}\n\n"
+    text += "Tᴏᴘ 𝟸𝟶 Usᴇʀs Wɪᴛʜ Mᴏsᴛ Fɪʟᴇs Sᴏʀᴛᴇᴅ:\n\n"
+
+    for uid, count in sorted_users:
+
+        try:
+            user = await bot.get_users(uid)
+
+            name = user.first_name
+
+            if len(name) > 25:
+                name = name[:25]
+
+        except:
+            name = "Unknown"
+
+        text += f"👤 « {name} » {count}\n"
+
+    text += f"\nTᴏᴛᴀʟ Sᴏʀᴛᴇᴅ Fɪʟᴇs: {total_files}"
+
+    return text
+
+
+# ---------------- LEADERBOARD COMMAND ---------------- #
+
+@bot.on_message(filters.private & filters.command("leaderboard"))
+async def leaderboard(_, msg):
+
+    text = await generate_leaderboard("today")
+
+    buttons = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("📅 Today", callback_data="lb_today"),
+            InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
+        ],
+        [
+            InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
+            InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
+        ]
+    ])
+
+    await msg.reply_text(
+        text,
+        reply_markup=buttons
+    )
+
+
+# ---------------- LEADERBOARD BUTTONS ---------------- #
+# ADD INSIDE YOUR CALLBACK QUERY FUNCTION
+
+elif data.startswith("lb_"):
+
+    period = data.split("_")[1]
+
+    text = await generate_leaderboard(period)
+
+    buttons = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("📅 Today", callback_data="lb_today"),
+            InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
+        ],
+        [
+            InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
+            InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
+        ]
+    ])
+
+    await query.message.edit_text(
+        text,
+        reply_markup=buttons
+    )
+
+
+# ---------------- USER INFO ---------------- #
+
+@bot.on_message(filters.private & filters.command("info"))
+async def user_info(_, msg):
+
+    user = msg.from_user
+
+    try:
+        photos = await bot.get_chat_photos(user.id, limit=1)
+        has_photo = "ʏᴇs 🌠"
+    except:
+        has_photo = "ɴᴏ ❌"
+
+    bio_text = "Nᴏ Bɪᴏ"
+
+    try:
+        full = await bot.get_users(user.id)
+
+        if hasattr(full, "bio") and full.bio:
+            bio_text = full.bio
+
+    except:
+        pass
+
+    username = f"@{user.username}" if user.username else "Nᴏɴᴇ"
+
+    text = f"""
+👤 ᴜsᴇʀ ɪɴғᴏ
+━━━━━━━━━━━━━━━
+➣ ᴜsᴇʀ ɪᴅ: {user.id}
+➣ ɴᴀᴍᴇ: {user.first_name}
+➣ ᴜsᴇʀɴᴀᴍᴇ: {username}
+➣ ʟᴀsᴛ sᴇᴇɴ: ⏱ ʀᴇᴄᴇɴᴛʟʏ
+➣ ᴅᴀᴛᴀᴄᴇɴᴛᴇʀ ɪᴅ: {user.dc_id if user.dc_id else "Unknown"}
+➣ ʟᴀɴɢᴜᴀɢᴇ: {user.language_code if user.language_code else "Unknown"}
+━━━━━━━━━━━━━━━
+➣ sᴄᴀᴍ ᴀᴄᴄᴏᴜɴᴛ: {"ʏᴇs ❌" if user.is_scam else "ɴᴏ ☑️"}
+➣ ғᴀᴋᴇ ᴀᴄᴄᴏᴜɴᴛ: {"ʏᴇs ❌" if user.is_fake else "ɴᴏ ☑️"}
+➣ ᴘʀᴏғɪʟᴇ ᴘɪᴄᴛᴜʀᴇ: {has_photo}
+━━━━━━━━━━━━━━━
+➣ ʙɪᴏ: {bio_text}
+"""
+
+    buttons = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                "🌐 Vɪᴇᴡ Pʀᴏғɪʟᴇ",
+                url=f"tg://user?id={user.id}"
+            )
+        ]
+    ])
+
+    await msg.reply_text(
+        text,
+        reply_markup=buttons
+        )
+
+# ---------------- MEDIAINFO ---------------- #
+
+@bot.on_message(filters.private & filters.command("mediainfo"))
+async def mediainfo(_, msg):
+
+    replied = msg.reply_to_message
+
+    if not replied:
+        return await msg.reply(
+            "❌ Rᴇᴘʟʏ Tᴏ A Vɪᴅᴇᴏ Oʀ Dᴏᴄᴜᴍᴇɴᴛ"
+        )
+
+    media = replied.video or replied.document
+
+    if not media:
+        return await msg.reply(
+            "❌ Uɴsᴜᴘᴘᴏʀᴛᴇᴅ Mᴇᴅɪᴀ"
+        )
+
+    file_path = await replied.download()
+
+    try:
+        probe = ffmpeg.probe(file_path)
+
+        format_data = probe.get("format", {})
+        streams = probe.get("streams", [])
+
+        video_stream = next(
+            (x for x in streams if x["codec_type"] == "video"),
+            None
+        )
+
+        audio_stream = next(
+            (x for x in streams if x["codec_type"] == "audio"),
+            None
+        )
+
+        duration = int(float(format_data.get("duration", 0)))
+        size = humanbytes(int(format_data.get("size", 0)))
+
+        text = f"""
+📂 Mᴇᴅɪᴀ Iɴғᴏ
+
+━━━━━━━━━━━━━━━
+➣ Fɪʟᴇ Nᴀᴍᴇ:
+{media.file_name}
+
+━━━━━━━━━━━━━━━
+➣ Sɪᴢᴇ: {size}
+➣ Dᴜʀᴀᴛɪᴏɴ: {time_formatter(duration)}
+
+━━━━━━━━━━━━━━━
+🎬 Vɪᴅᴇᴏ Dᴇᴛᴀɪʟs
+
+➣ Cᴏᴅᴇᴄ: {video_stream.get('codec_name', 'Unknown') if video_stream else 'Unknown'}
+➣ Rᴇsᴏʟᴜᴛɪᴏɴ: {video_stream.get('width', 0)}x{video_stream.get('height', 0) if video_stream else 0}
+➣ FPS: {video_stream.get('r_frame_rate', 'Unknown') if video_stream else 'Unknown'}
+
+━━━━━━━━━━━━━━━
+🔊 Aᴜᴅɪᴏ Dᴇᴛᴀɪʟs
+
+➣ Cᴏᴅᴇᴄ: {audio_stream.get('codec_name', 'Unknown') if audio_stream else 'Unknown'}
+➣ Cʜᴀɴɴᴇʟs: {audio_stream.get('channels', 'Unknown') if audio_stream else 'Unknown'}
+"""
+
+        await msg.reply_text(text)
+
+    except Exception as e:
+        await msg.reply(f"❌ Eʀʀᴏʀ:\n{e}")
+
+    try:
+        os.remove(file_path)
+    except:
+        pass
+
+
+# ---------------- DONATE ---------------- #
+
+@bot.on_message(filters.private & filters.command("donate"))
+async def donate(_, msg):
+
+    text = """
+💖 Sᴜᴘᴘᴏʀᴛ Tʜᴇ Bᴏᴛ
+
+Iғ Yᴏᴜ Lɪᴋᴇ Tʜɪs Bᴏᴛ Aɴᴅ Wᴀɴᴛ
+Tᴏ Sᴜᴘᴘᴏʀᴛ Tʜᴇ Dᴇᴠᴇʟᴏᴘᴇʀ,
+Yᴏᴜ Cᴀɴ Dᴏɴᴀᴛᴇ ❤️
+
+━━━━━━━━━━━━━━━
+➣ UPI ID:
+9963812392@axl
+
+➣ Developer:
+@Mr_Mohammed_29
+━━━━━━━━━━━━━━━
+"""
+
+    buttons = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                "💬 Cᴏɴᴛᴀᴄᴛ Dᴇᴠᴇʟᴏᴘᴇʀ",
+                url="https://t.me/Mr_Mohammed_29"
+            )
+        ]
+    ])
+
+    await msg.reply_text(
+        text,
+        reply_markup=buttons
+    )
+
+
+# ---------------- CHAT ID ---------------- #
+
+@bot.on_message(filters.private & filters.command("chatid"))
+async def chatid(_, msg):
+
+    text = f"""
+🆔 Cʜᴀᴛ Iɴғᴏ
+
+━━━━━━━━━━━━━━━
+➣ Usᴇʀ ID: `{msg.from_user.id}`
+➣ Cʜᴀᴛ ID: `{msg.chat.id}`
+━━━━━━━━━━━━━━━
+"""
+
+    await msg.reply_text(text)
+    
 # ---------------- RUN ----------------
 keep_alive()
 
