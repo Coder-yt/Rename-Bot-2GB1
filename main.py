@@ -85,9 +85,6 @@ def parse_duration(value: str):
     
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from pymediainfo import MediaInfo
-from telegraph import Telegraph
-
 def get_home_text(user):
     return (
         f"Hᴇʏ {user.mention} ♡\n\n"
@@ -1288,111 +1285,6 @@ async def user_info(_, msg):
         text,
         reply_markup=buttons
         )
-
-# ---------------- MEDIAINFO ---------------- #
-
-telegraph = Telegraph()
-telegraph.create_account(short_name="MediainfoBot")
-
-@bot.on_message(filters.private & filters.command("mediainfo"))
-async def mediainfo(_, msg):
-
-    replied = msg.reply_to_message
-
-    if not replied:
-        return await msg.reply(
-            "❌ Reply To A Video Or Document"
-        )
-
-    media = replied.video or replied.document
-
-    if not media:
-        return await msg.reply(
-            "❌ Unsupported Media"
-        )
-
-    processing = await msg.reply(
-        "📄 Generating MediaInfo..."
-    )
-
-    file_path = await replied.download(
-        file_name=f"temp_mediainfo/{media.file_name}"
-    )
-
-    try:
-
-        media_info = MediaInfo.parse(file_path)
-
-        full_info = media_info.to_data()
-
-        text = f"""
-<p><b>📄 MediaInfo</b></p>
-"""
-
-📅 Date: {datetime.datetime.now().strftime("%B %d, %Y")}<br>
-🤖 Bot: @Jinwoo_Rename_bot<br><br>
-
-<b>📁 File Name</b><br>
-{media.file_name}<br><br>
-"""
-
-        for track in full_info["tracks"]:
-
-            track_type = str(
-                track.get("track_type", "Unknown")
-            )
-
-            text += f"<p><b>📌 {track_type}</b></p>"
-
-            for key, value in track.items():
-
-                if key == "track_type":
-                    continue
-
-                if value in [None, "", "0"]:
-                    continue
-
-                key = str(key)
-                value = str(value)
-
-                value = (
-                    value.replace("<", "")
-                    .replace(">", "")
-                    .replace("&", "and")
-                )
-
-                text += (
-                    f"<p><b>{key.replace('_', ' ').title()}</b>: "
-                    f"{value}</p>"
-                )
-
-            text += "<br>"
-
-        response = telegraph.create_page(
-            title=f"MediaInfo - {media.file_name[:50]}",
-            html_content=str(text)
-        )
-
-        url = f"https://telegra.ph/{response['path']}"
-
-        await processing.edit_text(
-            f"📄 <b>MediaInfo Generated Successfully</b>\n\n"
-            f"➲ Link : {url}",
-            disable_web_page_preview=False
-        )
-
-    except Exception as e:
-
-        await processing.edit_text(
-            f"❌ Error:\n{str(e)}"
-        )
-
-    try:
-        os.remove(file_path)
-
-    except:
-        pass
-
 
 # ---------------- DONATE ---------------- #
 
