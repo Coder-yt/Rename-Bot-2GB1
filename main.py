@@ -954,7 +954,7 @@ async def cb(_, query: CallbackQuery):
                 new_name = f"{caption}{ext}"
             else:
                 new_name = f"{prefix}{base_name}{suffix}{ext}"
-            output = f"temp_{user_id}_{original_name}"
+            output = f"temp_{user_id}_{new_name}"
             
             final = add_metadata(
                 file_path,
@@ -1037,7 +1037,6 @@ async def cb(_, query: CallbackQuery):
                 if mode == "video":
                     await msg.reply_video(
                         video=final,
-                        file_name=new_name,
                         caption=caption,
                         thumb=thumb_path,
                         duration=duration,
