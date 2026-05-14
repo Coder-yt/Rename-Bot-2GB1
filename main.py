@@ -132,6 +132,8 @@ from config import (
     UPDATE_CHANNEL
 )
 
+ADMINS = [OWNER_ID]
+
 user_files = {}
 
 print("LOG_CHANNEL:", LOG_CHANNEL)
@@ -370,7 +372,7 @@ async def disable_mode(client, message):
 
 # ---------------- START ----------------
 @bot.on_message(filters.command("start"))
-async def start(_, message):
+async def start(client, message):
 
     # ---------------- DISABLE MODE ---------------- #
 
