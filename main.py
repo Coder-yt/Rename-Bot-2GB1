@@ -1412,6 +1412,7 @@ keep_alive()
 
 print("BOT STARTED 🚀")
 bot.run()
+
 # ------------------------- #
 # Don't Remove Credit 
 # Ask Doubt @AU_Bot_Discussion 
