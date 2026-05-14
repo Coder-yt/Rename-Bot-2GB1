@@ -1205,29 +1205,28 @@ async def leaderboard(_, msg):
 
 
 # ---------------- LEADERBOARD BUTTONS ---------------- #
-# ADD INSIDE YOUR CALLBACK QUERY FUNCTION
 
-elif data.startswith("lb_"):
+        elif data.startswith("lb_"):
 
-    period = data.split("_")[1]
+        period = data.split("_")[1]
 
-    text = await generate_leaderboard(period)
+        text = await generate_leaderboard(period)
 
-    buttons = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("📅 Today", callback_data="lb_today"),
-            InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
-        ],
-        [
-            InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
-            InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
-        ]
-    ])
+        buttons = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("📅 Today", callback_data="lb_today"),
+                InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
+            ],
+            [
+                InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
+                InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
+            ]
+        ])
 
-    await query.message.edit_text(
-        text,
-        reply_markup=buttons
-    )
+        await query.message.edit_text(
+            text,
+            reply_markup=buttons
+        )
 
 
 # ---------------- USER INFO ---------------- #
