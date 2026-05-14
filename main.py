@@ -1292,7 +1292,6 @@ async def user_info(_, msg):
 # ---------------- MEDIAINFO ---------------- #
 
 telegraph = Telegraph()
-telegraph = Telegraph()
 telegraph.create_account(short_name="MediainfoBot")
 
 @bot.on_message(filters.private & filters.command("mediainfo"))
@@ -1327,7 +1326,8 @@ async def mediainfo(_, msg):
         full_info = media_info.to_data()
 
         text = f"""
-<b>📄 MediaInfo</b><br><br>
+<p><b>📄 MediaInfo</b></p>
+"""
 
 📅 Date: {datetime.datetime.now().strftime("%B %d, %Y")}<br>
 🤖 Bot: @Jinwoo_Rename_bot<br><br>
@@ -1342,7 +1342,7 @@ async def mediainfo(_, msg):
                 track.get("track_type", "Unknown")
             )
 
-            text += f"<b>📌 {track_type}</b><br><br>"
+            text += f"<p><b>📌 {track_type}</b></p>"
 
             for key, value in track.items():
 
@@ -1362,15 +1362,15 @@ async def mediainfo(_, msg):
                 )
 
                 text += (
-                    f"<b>{key.replace('_', ' ').title()}</b>: "
-                    f"{value}<br>"
+                    f"<p><b>{key.replace('_', ' ').title()}</b>: "
+                    f"{value}</p>"
                 )
 
             text += "<br>"
 
         response = telegraph.create_page(
-            title=f"MediaInfo - {media.file_name}",
-            html_content=text
+            title=f"MediaInfo - {media.file_name[:50]}",
+            html_content=str(text)
         )
 
         url = f"https://telegra.ph/{response['path']}"
