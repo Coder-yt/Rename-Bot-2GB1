@@ -273,33 +273,16 @@ bot = Client(
 # ---------------- CHECK FORCE SUB ---------------- #
 
 async def check_force_sub(client, user_id):
-
-    global FORCE_SUB_CHANNEL
-
     if not FORCE_SUB_CHANNEL:
         return True
 
     try:
-        member = await client.get_chat_member(
-            chat_id=FORCE_SUB_CHANNEL,
-            user_id=user_id
-        )
+        member = await client.get_chat_member(FORCE_SUB_CHANNEL, user_id)
 
-        print("FORCE SUB STATUS:", member.status)
+        return member.status in ["member", "administrator", "creator"]
 
-        if str(member.status) in [
-            "member",
-            "administrator",
-            "creator",
-            "owner"
-        ]:
-            return True
-
-    except Exception as e:
-        print("FORCE SUB ERROR:", e)
-
-    return False
-
+    except Exception:
+        return False
 
 # ---------------- FORCE SUB COMMANDS ---------------- #
 
@@ -390,26 +373,22 @@ async def start(client, message):
 
     if message.from_user.id not in ADMINS:
 
-        joined = await check_force_sub(
-            client,
-            message.from_user.id
-        )
+        joined = await check_force_sub(client, message.from_user.id)
 
         if not joined:
+           buttons = InlineKeyboardMarkup([
+               [
+                   InlineKeyboardButton(
+                       "● Jᴏɪɴ Nᴏᴡ ●",
+                       url=f"https://t.me/{FORCE_SUB_CHANNEL.replace('@', '')}"
+                   )
+               ]
+           ])
 
-            buttons = InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "● Jᴏɪɴ Nᴏᴡ ●",
-                        url=f"https://t.me/{FORCE_SUB_CHANNEL.replace('@', '')}"
-                    )
-                ]
-            ])
-
-            return await message.reply_text(
-                "›› ‼️ ʟᴏᴏᴋs ʟɪᴋᴇ ʏᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴊᴏɪɴᴇᴅ ᴛᴏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ʏᴇᴛ, sᴜʙsᴄʀɪʙᴇ ɴᴏw.",
-                reply_markup=buttons
-            )
+           return await message.reply_text(
+               "›› ‼️ ʟᴏᴏᴋs ʟɪᴋᴇ ʏᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴊᴏɪɴᴇᴅ ᴛᴏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟ ʏᴇᴛ, sᴜʙsᴄʀɪʙᴇ ɴᴏw.",
+               reply_markup=buttons
+           )
 
     try:
         if await is_banned(message.from_user.id):
@@ -458,9 +437,6 @@ async def start(client, message):
 @bot.on_message(filters.command("set_caption"))
 async def set_caption(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-
     if await is_banned(msg.from_user.id):
         return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
 
@@ -475,9 +451,6 @@ async def set_caption(_, msg):
 
 @bot.on_message(filters.command("see_caption"))
 async def see_caption(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
 
     user = await get_user(msg.from_user.id) or {}
 
@@ -497,9 +470,6 @@ async def del_caption(_, msg):
 @bot.on_message(filters.command("set_prefix"))
 async def set_prefix(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Pʀᴇғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
 
@@ -510,9 +480,6 @@ async def set_prefix(_, msg):
 
 @bot.on_message(filters.command("set_suffix"))
 async def set_suffix(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
 
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜғғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
@@ -525,9 +492,6 @@ async def set_suffix(_, msg):
 @bot.on_message(filters.command("see_prefix"))
 async def see_prefix(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-        
     user = await get_user(msg.from_user.id) or {}
     prefix = user.get("prefix")
 
@@ -540,18 +504,12 @@ async def see_prefix(_, msg):
 @bot.on_message(filters.command("del_prefix"))
 async def del_prefix(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-        
     await set_user(msg.from_user.id, {"prefix": ""})
     await msg.reply("Pʀᴇғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
 
 
 @bot.on_message(filters.command("see_suffix"))
 async def see_suffix(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     user = await get_user(msg.from_user.id) or {}
     suffix = user.get("suffix")
@@ -564,9 +522,6 @@ async def see_suffix(_, msg):
 
 @bot.on_message(filters.command("del_suffix"))
 async def del_suffix(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     await set_user(msg.from_user.id, {"suffix": ""})
     await msg.reply("Sᴜғғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
@@ -615,9 +570,6 @@ async def metadata(_, msg):
 # ---------------- METADATA SETTERS ----------------
 @bot.on_message(filters.command("settitle"))
 async def settitle(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /settitle Encoded By @Anime_UpdatesAU")
@@ -629,9 +581,6 @@ async def settitle(_, msg):
 
 @bot.on_message(filters.command("setauthor"))
 async def setauthor(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴛʜᴏʀ\n\nExᴀᴍᴩʟᴇ:- /setauthor @Anime_UpdatesAU")
@@ -644,9 +593,6 @@ async def setauthor(_, msg):
 @bot.on_message(filters.command("setartist"))
 async def setartist(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-        
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Aʀᴛɪꜱᴛ\n\nExᴀᴍᴩʟᴇ:- /setartist @Anime_UpdatesAU")
 
@@ -657,9 +603,6 @@ async def setartist(_, msg):
 
 @bot.on_message(filters.command("setaudio"))
 async def setaudio(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴅɪᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setaudio @Anime_UpdatesAU")
@@ -671,9 +614,6 @@ async def setaudio(_, msg):
 
 @bot.on_message(filters.command("setsubtitle"))
 async def setsubtitle(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜʙᴛɪᴛʟᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setsubtitle @Anime_UpdatesAU")
@@ -685,9 +625,6 @@ async def setsubtitle(_, msg):
 
 @bot.on_message(filters.command("setvideo"))
 async def setvideo(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     if len(msg.command) < 2:
         return await msg.reply("Gɪᴠᴇ Tʜᴇ Vɪᴅᴇᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setvideo Encoded by @Anime_UpdatesAU")
@@ -700,9 +637,6 @@ async def setvideo(_, msg):
 
 @bot.on_message(filters.command("setdump"))
 async def set_dump(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
 
     if len(msg.command) < 2:
         return await msg.reply(
@@ -720,9 +654,6 @@ async def set_dump(_, msg):
 @bot.on_message(filters.command("chkdump"))
 async def chk_dump(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-
     channel_id = dump_channels.get(msg.from_user.id)
 
     if not channel_id:
@@ -735,9 +666,6 @@ async def chk_dump(_, msg):
 @bot.on_message(filters.command("deldump"))
 async def del_dump(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-
     if msg.from_user.id in dump_channels:
         del dump_channels[msg.from_user.id]
 
@@ -747,18 +675,12 @@ async def del_dump(_, msg):
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
 
-    if await disabled_mode_check(msg):
-        return
-        
     await set_user(msg.from_user.id, {"thumb": msg.photo.file_id})
     await msg.reply("✅️ Tʜᴜᴍʙɴᴀɪʟ Sᴀᴠᴇᴅ")
 
 
 @bot.on_message(filters.command("view_thumb"))
 async def view_thumb(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     user = await get_user(msg.from_user.id) or {}
     if user.get("thumb"):
@@ -769,9 +691,6 @@ async def view_thumb(_, msg):
 
 @bot.on_message(filters.command("del_thumb"))
 async def del_thumb(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
         
     await set_user(msg.from_user.id, {"thumb": ""})
     await msg.reply("❌️ Tʜᴜᴍʙɴᴀɪʟ Dᴇʟᴇᴛᴇᴅ")
@@ -779,9 +698,6 @@ async def del_thumb(_, msg):
 # ---------------- FILE / VIDEO CHOOSER ----------------
 @bot.on_message(filters.document | filters.video)
 async def choose(_, msg):
-
-    if await disabled_mode_check(msg):
-        return
 
     if await is_banned(msg.from_user.id):
         return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
