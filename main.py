@@ -1389,12 +1389,17 @@ Tᴏ Sᴜᴘᴘᴏʀᴛ Tʜᴇ Dᴇᴠᴇʟᴏᴘᴇʀ,
 Yᴏᴜ Cᴀɴ Dᴏɴᴀᴛᴇ ❤️
 
 ━━━━━━━━━━━━━━━
-➣ UPI ID:
-9963812392@axl
 
-➣ Developer:
-@Mr_Mohammed_29
+➣ ᴜᴘɪ ɪᴅ:
+<code>mohammed.1006@superyes</code>
+
+➣ ǫʀ ᴄᴏᴅᴇ:
+<a href='https://telegra.ph/file/2197f68092b7161075d2d-34f98b9f2e12216868.jpg'>Click Here</a>
+
 ━━━━━━━━━━━━━━━
+
+Aғᴛᴇʀ Pᴀʏᴍᴇɴᴛ Sᴇɴᴅ Sᴄʀᴇᴇɴsʜᴏᴛ
+Tᴏ Dᴇᴠᴇʟᴏᴘᴇʀ
 """
 
     buttons = InlineKeyboardMarkup([
@@ -1408,7 +1413,8 @@ Yᴏᴜ Cᴀɴ Dᴏɴᴀᴛᴇ ❤️
 
     await msg.reply_text(
         text,
-        reply_markup=buttons
+        reply_markup=buttons,
+        disable_web_page_preview=True
     )
 
 
