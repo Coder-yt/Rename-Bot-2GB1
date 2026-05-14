@@ -11,6 +11,8 @@ flask
 ffmpeg-python
 psutil 
 Pillow==10.4.0
+pymediainfo
+telegraph
 
 # ------------------------- #
 # Don't Remove Credit 
