@@ -857,6 +857,28 @@ async def cb(_, query: CallbackQuery):
         elif data == "close":
             await query.message.delete()
 
+        elif data.startswith("lb_"):
+
+        period = data.split("_")[1]
+
+        text = await generate_leaderboard(period)
+
+        buttons = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("📅 Today", callback_data="lb_today"),
+                InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
+            ],
+            [
+                InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
+                InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
+            ]
+        ])
+
+        await query.message.edit_text(
+            text,
+            reply_markup=buttons
+        )
+
         elif data.startswith("cancel_"):
 
             uid = int(data.split("_")[1])
@@ -1202,30 +1224,6 @@ async def leaderboard(_, msg):
         text,
         reply_markup=buttons
     )
-
-# ---------------- LEADERBOARD BUTTONS ---------------- #
-        elif data.startswith("lb_"):
-
-        period = data.split("_")[1]
-
-        text = await generate_leaderboard(period)
-
-        buttons = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("📅 Today", callback_data="lb_today"),
-                InlineKeyboardButton("📆 Weekly", callback_data="lb_weekly")
-            ],
-            [
-                InlineKeyboardButton("🗓 Monthly", callback_data="lb_monthly"),
-                InlineKeyboardButton("🏆 All Time", callback_data="lb_alltime")
-            ]
-        ])
-
-        await query.message.edit_text(
-            text,
-            reply_markup=buttons
-        )
-
 # ---------------- USER INFO ---------------- #
 
 @bot.on_message(filters.private & filters.command("info"))
