@@ -1203,9 +1203,7 @@ async def leaderboard(_, msg):
         reply_markup=buttons
     )
 
-
 # ---------------- LEADERBOARD BUTTONS ---------------- #
-
         elif data.startswith("lb_"):
 
         period = data.split("_")[1]
@@ -1227,7 +1225,6 @@ async def leaderboard(_, msg):
             text,
             reply_markup=buttons
         )
-
 
 # ---------------- USER INFO ---------------- #
 
