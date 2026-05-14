@@ -378,8 +378,6 @@ async def disable_mode(client, message):
 async def start(client, message):
 
     # ---------------- DISABLE MODE ---------------- #
-    
-    if await disabled_mode_check(message):
         
     if not FREE_MODE:
 
