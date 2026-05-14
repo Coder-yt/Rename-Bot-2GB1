@@ -1156,7 +1156,11 @@ async def cb(_, query: CallbackQuery):
             user_mode.pop(user_id, None)
             
     except Exception as e:
-       print("Callback Error:", e)
+
+        if "MESSAGE_NOT_MODIFIED" in str(e):
+            return
+
+        print("Callback Error:", e)
 
 # ---------------- LEADERBOARD DATA ---------------- #
 
@@ -1325,7 +1329,7 @@ async def mediainfo(_, msg):
         full_info = media_info.to_data()
 
         text = f"""
-<h2>📄 MediaInfo</h2>
+<b>📄 MediaInfo</b><br><br>
 
 📅 Date: {datetime.datetime.now().strftime("%B %d, %Y")}<br>
 By: Bot Station<br><br>
@@ -1338,7 +1342,7 @@ By: Bot Station<br><br>
 
             track_type = track.get("track_type", "Unknown")
 
-            text += f"<h3>📌 {track_type}</h3>"
+            text += f"<b>📌 {track_type}</b><br>"
 
             for key, value in track.items():
 
