@@ -1,4 +1,4 @@
--------------------------
+#-------------------------#
 
 #Don't Remove Credit
 
@@ -6,7 +6,7 @@
 
 #Owner @Mr_Mohammed_29
 
--------------------------
+#-------------------------#
 
 import ffmpeg
 import ffmpeg
@@ -85,7 +85,7 @@ except Exception as e:
         print("❌ Rᴇ-Eɴᴄᴏᴅᴇ Aʟsᴏ Fᴀɪʟᴇᴅ:", e2)  
         return input_file
 
--------------------------
+#-------------------------#
 
 #Don't Remove Credit
 
@@ -93,4 +93,4 @@ except Exception as e:
 
 #Owner @Mr_Mohammed_29
 
--------------------------
+#-------------------------#
