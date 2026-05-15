@@ -8,7 +8,6 @@ import time
 import asyncio
 import ffmpeg
 import psutil
-import gc
 import datetime
 
 def log_event(text: str):
@@ -56,7 +55,7 @@ active_tasks = {}
 
 # -------- MAX FILE LIMIT -------- #
 
-MAX_FILE_SIZE = 2877628088  # 2.68 GB
+MAX_FILE_SIZE = 2097152000  # 2GB 
 
 FORCE_SUB_CHANNEL = None
 FREE_MODE = True
@@ -730,7 +729,7 @@ async def choose(_, msg):
     if media.file_size > MAX_FILE_SIZE:
         return await msg.reply_text(
             f"❌ Fɪʟᴇ Tᴏᴏ Lᴀʀɢᴇ\n\n"
-            f"📦 Mᴀx Sᴜᴘᴘᴏʀᴛᴇᴅ Sɪᴢᴇ: 2.68 GB\n"
+            f"📦 Mᴀx Sᴜᴘᴘᴏʀᴛᴇᴅ Sɪᴢᴇ: 2GB\n"
             f"📁 Yᴏᴜʀ Fɪʟᴇ: {humanbytes(media.file_size)}"
         )
         
@@ -1093,7 +1092,7 @@ async def cb(_, query: CallbackQuery):
             await query.message.edit_text(
                 "📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...",
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("😞 Cᴀɴᴄᴇʟ", callback_data=f"cancel_{user_id}")]
+                    [InlineKeyboardButton("Cᴀɴᴄᴇʟ", callback_data=f"cancel_{user_id}")]
                 ])
             )
 
