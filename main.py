@@ -143,8 +143,6 @@ print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 
 from database import *
 
-from database import setup_database
-
 dump_channels = {}
 
 from utils import progress_bar
