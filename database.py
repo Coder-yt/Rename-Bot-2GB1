@@ -24,28 +24,7 @@ users = db.users
 async def setup_database():
     await users.create_index("premium")
     await users.create_index("banned")
-
-# ------------------------- #
-
-async def get_premium_status(uid):
-    user = await users.find_one({"_id": uid})
-    if not user:
-        return False
-
-    if not user.get("premium"):
-        return False
-
-    expiry = user.get("premium_expiry", 0)
-
-    if expiry and time.time() > expiry:
-        await users.update_one(
-            {"_id": uid},
-            {"$set": {"premium": False, "premium_expiry": 0}}
-        )
-        return False
-
-    return True
-    
+   
 # ------------------------- #
 
 async def get_user(uid):
@@ -69,8 +48,6 @@ async def add_user(uid):
                 "suffix": "",
                 "caption": "",
                 "thumb": "",
-                "premium": False,
-                "premium_expiry": 0,
                 "banned": False
             }
         },
@@ -81,12 +58,6 @@ async def add_user(uid):
 async def is_banned(uid):
     user = await get_user(uid)
     return user.get("banned", False) if user else False
-
-# ------------------------- #
-
-async def is_premium(uid):
-    user = await get_user(uid)
-    return user.get("premium", False) if user else False
 
 # ------------------------- #
 
