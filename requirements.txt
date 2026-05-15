@@ -11,9 +11,6 @@ flask
 ffmpeg-python
 psutil
 Pillow==10.4.0
-aiofiles
-hachoir
-python-dotenv
 
 # ------------------------- #
 # Don't Remove Credit 
