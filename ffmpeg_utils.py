@@ -104,7 +104,8 @@ def add_metadata(input_file, output_file, title, author, artist, audio, subtitle
         ffmpeg.run(
             stream,
             overwrite_output=True,
-            quiet=True
+            quiet=True,
+            cmd=["ffmpeg", "-threads", "2"]
         )
 
         # -------- STEP 2: VALIDATE OUTPUT -------- #
@@ -159,7 +160,8 @@ def add_metadata(input_file, output_file, title, author, artist, audio, subtitle
             ffmpeg.run(
                 stream,
                 overwrite_output=True,
-                quiet=True
+                quiet=True,
+                cmd=["ffmpeg", "-threads", "2"]
             )
 
             # ---------- VALIDATE AGAIN ----------
