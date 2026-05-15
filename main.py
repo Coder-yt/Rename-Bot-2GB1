@@ -1105,12 +1105,13 @@ async def cb(_, query: CallbackQuery):
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
                 text = f"""{bar}
-            📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
-            <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
-            <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
-            <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
-            <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
-            """
+                📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
+                
+                <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
+                <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
+                <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
+                <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
+                """
 
                 try:
                     await query.message.edit_text(text, parse_mode=ParseMode.HTML)
@@ -1209,12 +1210,13 @@ async def cb(_, query: CallbackQuery):
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
                 text = f"""{bar}
-            📤 Uᴘʟᴏᴀᴅɪɴɢ...
-            <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
-            <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
-            <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
-            <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
-             """
+                📤 Uᴘʟᴏᴀᴅɪɴɢ...
+                
+                <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
+                <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
+                <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
+                <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
+                """
 
                 try:
                     await query.message.edit_text(text, parse_mode=ParseMode.HTML)
@@ -1234,7 +1236,6 @@ async def cb(_, query: CallbackQuery):
                         width=width,
                         height=height,
                         supports_streaming=True,
-                        file_name=new_name,
                         progress=prog
                     )
 
@@ -1251,7 +1252,6 @@ async def cb(_, query: CallbackQuery):
                                 width=width,
                                 height=height,
                                 supports_streaming=True,
-                                file_name=new_name
                             )
 
                         except Exception as e:
