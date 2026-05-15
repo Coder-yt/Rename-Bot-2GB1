@@ -55,7 +55,7 @@ active_tasks = {}
 
 # -------- MAX FILE LIMIT -------- #
 
-MAX_FILE_SIZE = 2.60 * 1024 * 1024 * 1024  # 2.60 GB
+MAX_FILE_SIZE = 2877628088  # 2.68 GB
 
 FORCE_SUB_CHANNEL = None
 FREE_MODE = True
@@ -715,7 +715,7 @@ async def choose(_, msg):
     if media.file_size > MAX_FILE_SIZE:
         return await msg.reply_text(
             f"❌ Fɪʟᴇ Tᴏᴏ Lᴀʀɢᴇ\n\n"
-            f"📦 Mᴀx Sᴜᴘᴘᴏʀᴛᴇᴅ Sɪᴢᴇ: 2.60 GB\n"
+            f"📦 Mᴀx Sᴜᴘᴘᴏʀᴛᴇᴅ Sɪᴢᴇ: 2.68 GB\n"
             f"📁 Yᴏᴜʀ Fɪʟᴇ: {humanbytes(media.file_size)}"
         )
         
