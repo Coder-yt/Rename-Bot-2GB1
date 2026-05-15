@@ -1222,7 +1222,10 @@ async def cb(_, query: CallbackQuery):
                     pass
            # -------- SEND FILE -------- #
             try:
+
+               # -------- VIDEO MODE -------- #
                 if mode == "video":
+
                     await msg.reply_video(
                         video=final,
                         caption=caption,
@@ -1231,48 +1234,57 @@ async def cb(_, query: CallbackQuery):
                         width=width,
                         height=height,
                         supports_streaming=True,
+                        file_name=new_name,
                         progress=prog
-                    )  
+                    )
 
                     dump_id = dump_channels.get(user_id)
 
                     if dump_id:
                         try:
-                            await bot.copy_message(
+                            await bot.send_video(
                                 chat_id=int(dump_id),
-                  
-            from_chat_id=msg.chat.id,
-                                message_id=msg.id
+                                video=final,
+                                caption=caption,
+                                thumb=thumb_path,
+                                duration=duration,
+                                width=width,
+                                height=height,
+                                supports_streaming=True,
+                                file_name=new_name
                             )
 
                         except Exception as e:
                             print("Dump Error:", e)
 
+               # -------- DOCUMENT MODE -------- #
                 else:
-                     await msg.reply_document(
-                         document=final,
-                         file_name=new_name,
-                         caption=caption,
-                         thumb=thumb_path,
-                         progress=prog
-                     )
-        
-                     dump_id = dump_channels.get(user_id)
 
-                     if dump_id:
-                         try:
-                              await bot.send_document(
-                                  chat_id=int(dump_id),
-                                  document=final,
-                                  file_name=new_name,
-                                  caption=caption,
-                                  thumb=thumb_path
-                              )  
+                    await msg.reply_document(
+                        document=final,
+                        file_name=new_name,
+                        caption=caption,
+                        thumb=thumb_path,
+                        progress=prog
+                    )
 
-                         except Exception as e:
-                             print("Dump Error:", e)
+                    dump_id = dump_channels.get(user_id)
+
+                    if dump_id:
+                        try:
+                            await bot.send_document(
+                                chat_id=int(dump_id),
+                                document=final,
+                                file_name=new_name,
+                                caption=caption,
+                                thumb=thumb_path
+                            )
+
+                        except Exception as e:
+                            print("Dump Error:", e)
 
             except Exception as e:
+
                 await query.message.edit_text(
                     f"❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ\n\n{str(e)}"
                 )
