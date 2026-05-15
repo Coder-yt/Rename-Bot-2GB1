@@ -94,5 +94,3 @@ except Exception as e:
 #Owner @Mr_Mohammed_29
 
 -------------------------
-
-Add in this and don't remove othere code just add and give this code only
