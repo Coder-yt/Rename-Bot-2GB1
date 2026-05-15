@@ -8,6 +8,7 @@ import time
 import asyncio
 import ffmpeg
 import psutil
+import gc
 import datetime
 
 def log_event(text: str):
@@ -16,9 +17,6 @@ def log_event(text: str):
 
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
-
-if not os.path.exists("temp_mediainfo"):
-    os.makedirs("temp_mediainfo")
 
 if not os.path.exists("thumbs"):
     os.makedirs("thumbs")
@@ -54,6 +52,10 @@ from pyrogram.enums import ParseMode
 active_tasks = {}
 
 # ---------------- FORCE SUB ---------------- #
+
+# -------- MAX FILE LIMIT -------- #
+
+MAX_FILE_SIZE = 2.60 * 1024 * 1024 * 1024  # 2.60 GB
 
 FORCE_SUB_CHANNEL = None
 FREE_MODE = True
@@ -174,11 +176,14 @@ def safe_name(name):
 async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
     if user_thumb:
-        path = await bot.download_media(user_thumb, file_name=f"thumb_{user_id}.jpg")
+        path = await bot.download_media(
+            user_thumb,
+            file_name=f"thumbs/thumb_{user_id}.jpg"
+        )
         return path
 
     if is_video:
-        thumb_path = f"thumb_{user_id}.jpg"
+        thumb_path = f"thumbs/thumb_{user_id}.jpg"
 
         try:
             (
@@ -701,6 +706,16 @@ async def choose(_, msg):
 
     if await is_banned(msg.from_user.id):
         return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
+        # -------- FILE SIZE CHECK -------- #
+
+    media = msg.document or msg.video
+
+    if media.file_size > MAX_FILE_SIZE:
+        return await msg.reply_text(
+            f"❌ Fɪʟᴇ Tᴏᴏ Lᴀʀɢᴇ\n\n"
+            f"📦 Mᴀx Sᴜᴘᴘᴏʀᴛᴇᴅ Sɪᴢᴇ: 2.60 GB\n"
+            f"📁 Yᴏᴜʀ Fɪʟᴇ: {humanbytes(media.file_size)}"
+        )
         
     user_files[msg.from_user.id] = msg
     
@@ -1101,7 +1116,10 @@ async def cb(_, query: CallbackQuery):
                     pass
 
             try:
-                file_path = await msg.download(file_name=file.file_name, progress=dprog)
+                file_path = await msg.download(
+                    file_name=f"downloads/{file.file_name}",
+                    progress=dprog
+                )
             except Exception as e:
                 await query.message.edit_text("❌ Download Cancelled")
                 return
@@ -1122,7 +1140,7 @@ async def cb(_, query: CallbackQuery):
                 new_name = f"{caption}{ext}"
             else:
                 new_name = f"{prefix}{base_name}{suffix}{ext}"
-            output = f"temp_{user_id}_{new_name}"
+            output = f"downloads/temp_{user_id}_{new_name}"
             
             final = add_metadata(
                 file_path,
@@ -1270,6 +1288,9 @@ async def cb(_, query: CallbackQuery):
 
 
             # -------- CLEANUP -------- #
+
+            gc.collect()
+            
             try:
                 if os.path.exists(file_path):
                     os.remove(file_path)
