@@ -9,10 +9,14 @@ tgcrypto
 motor
 flask
 ffmpeg-python
-psutil 
+psutil
 Pillow==10.4.0
+aiofiles
+hachoir
+python-dotenv
 
 # ------------------------- #
 # Don't Remove Credit 
 # Ask Doubt @AU_Bot_Discussion 
 # Owner @Mr_Mohammed_29 
+# ------------------------- #
