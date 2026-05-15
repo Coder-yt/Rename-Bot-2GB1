@@ -1,4 +1,4 @@
--------------------------
+#-------------------------#
 
 #Don't Remove Credit
 
@@ -6,7 +6,7 @@
 
 #Owner @Mr_Mohammed_29
 
--------------------------
+#-------------------------#
 
 import time
 import os
@@ -69,7 +69,7 @@ f"⚡ Speed: {humanbytes(speed)}/s\n"
 f"⏳ ETA: {time_formatter(eta)}"
 )
 
--------------------------
+#-------------------------#
 
 #Don't Remove Credit
 
