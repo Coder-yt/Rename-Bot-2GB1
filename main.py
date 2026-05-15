@@ -143,6 +143,8 @@ print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 
 from database import *
 
+from database import setup_database
+
 dump_channels = {}
 
 from utils import progress_bar
@@ -1507,7 +1509,12 @@ async def chatid(_, msg):
 """
 
     await msg.reply_text(text)
+
+async def startup():
+    await setup_database()
     
+asyncio.get_event_loop().run_until_complete(startup())
+
 # ---------------- RUN ----------------
 keep_alive()
 
