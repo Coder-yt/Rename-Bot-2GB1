@@ -48,6 +48,7 @@ async def get_ping():
 from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
+from pyrogram.enums import ChatMemberStatus
 
 active_tasks = {}
 
@@ -280,15 +281,29 @@ bot = Client(
 # ---------------- CHECK FORCE SUB ---------------- #
 
 async def check_force_sub(client, user_id):
+
+    # If no force sub enabled
     if not FORCE_SUB_CHANNEL:
         return True
 
     try:
-        member = await client.get_chat_member(FORCE_SUB_CHANNEL, user_id)
+        member = await client.get_chat_member(
+            FORCE_SUB_CHANNEL,
+            user_id
+        )
 
-        return member.status in ["member", "administrator", "creator"]
+        # User joined
+        if member.status in [
+            ChatMemberStatus.MEMBER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.OWNER
+        ]:
+            return True
 
-    except Exception:
+        return False
+
+    except Exception as e:
+        print("FORCE SUB ERROR:", e)
         return False
 
 # ---------------- FORCE SUB COMMANDS ---------------- #
@@ -382,7 +397,7 @@ async def start(client, message):
 
         joined = await check_force_sub(client, message.from_user.id)
 
-        if not joined:
+        if joined is False:
            buttons = InlineKeyboardMarkup([
                [
                    InlineKeyboardButton(
@@ -1104,14 +1119,15 @@ async def cb(_, query: CallbackQuery):
                 filled = int(percent / 10)
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
-                text = f"""{bar}
-                📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
-                
-                <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
-                <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
-                <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
-                <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
-                """
+                text = f"""
+{bar}
+📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ...
+
+» 𝗗𝗼𝗻𝗲 : {round(percent, 1)}%
+» 𝗦𝗶𝘇𝗲 : {humanbytes(current)} | {humanbytes(total)}
+» 𝗦𝗽𝗲𝗲𝗱 : {humanbytes(speed)}/s
+» 𝗘𝗧𝗔 : {time_formatter(eta)}
+"""
 
                 try:
                     await query.message.edit_text(text, parse_mode=ParseMode.HTML)
@@ -1209,14 +1225,15 @@ async def cb(_, query: CallbackQuery):
                 filled = int(percent / 10)
                 bar = "⬢" * filled + "⬡" * (10 - filled)
 
-                text = f"""{bar}
-                📤 Uᴘʟᴏᴀᴅɪɴɢ...
-                
-                <b>» 𝗗𝗼𝗻𝗲</b> : {round(percent, 2)}%
-                <b>» 𝗦𝗶𝘇𝗲</b> : {humanbytes(current)} | {humanbytes(total)}
-                <b>» 𝗦𝗽𝗲𝗲𝗱</b> : {humanbytes(speed)}/s
-                <b>» 𝗘𝗧𝗔</b> : {time_formatter(eta)}
-                """
+                text = f"""
+{bar}
+📤 Uᴘʟᴏᴀᴅɪɴɢ...
+
+» 𝗗𝗼𝗻𝗲 : {round(percent, 1)}%
+» 𝗦𝗶𝘇𝗲 : {humanbytes(current)} | {humanbytes(total)}
+» 𝗦𝗽𝗲𝗲𝗱 : {humanbytes(speed)}/s
+» 𝗘𝗧𝗔 : {time_formatter(eta)}
+"""
 
                 try:
                     await query.message.edit_text(text, parse_mode=ParseMode.HTML)
