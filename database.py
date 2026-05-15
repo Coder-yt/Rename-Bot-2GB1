@@ -7,10 +7,23 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from config import MONGO_URI
 import time
 
-client = AsyncIOMotorClient(MONGO_URI)
+client = AsyncIOMotorClient(
+    MONGO_URI,
+    maxPoolSize=50,
+    minPoolSize=10,
+    serverSelectionTimeoutMS=5000
+)
 db = client.rename_bot
 
 users = db.users
+
+# ------------------------- #
+# CREATE INDEXES
+# ------------------------- #
+
+async def setup_database():
+    await users.create_index("premium")
+    await users.create_index("banned")
 
 # ------------------------- #
 
