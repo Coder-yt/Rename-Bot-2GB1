@@ -178,14 +178,11 @@ def safe_name(name):
 async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
     if user_thumb:
-        path = await bot.download_media(
-            user_thumb,
-            file_name=f"thumbs/thumb_{user_id}.jpg"
-        )
+        path = await bot.download_media(user_thumb, file_name=f"thumb_{user_id}.jpg")
         return path
 
     if is_video:
-        thumb_path = f"thumbs/thumb_{user_id}.jpg"
+        thumb_path = f"thumb_{user_id}.jpg"
 
         try:
             (
@@ -1134,10 +1131,7 @@ async def cb(_, query: CallbackQuery):
                     pass
 
             try:
-                file_path = await msg.download(
-                    file_name=f"downloads/{file.file_name}",
-                    progress=dprog
-                )
+                file_path = await msg.download(file_name=file.file_name, progress=dprog)
             except Exception as e:
                 await query.message.edit_text("❌ Download Cancelled")
                 return
@@ -1158,7 +1152,7 @@ async def cb(_, query: CallbackQuery):
                 new_name = f"{caption}{ext}"
             else:
                 new_name = f"{prefix}{base_name}{suffix}{ext}"
-            output = f"downloads/temp_{user_id}_{new_name}"
+            output = f"temp_{user_id}_{new_name}"
             
             final = add_metadata(
                 file_path,
@@ -1318,8 +1312,6 @@ async def cb(_, query: CallbackQuery):
 
 
             # -------- CLEANUP -------- #
-
-            gc.collect()
             
             try:
                 if os.path.exists(file_path):
@@ -1537,11 +1529,6 @@ async def chatid(_, msg):
 """
 
     await msg.reply_text(text)
-
-async def startup():
-    await setup_database()
-    
-asyncio.get_event_loop().run_until_complete(startup())
 
 # ---------------- RUN ----------------
 keep_alive()
