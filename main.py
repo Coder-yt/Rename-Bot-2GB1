@@ -1104,7 +1104,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # 🔥 prevent too frequent edits
-                if now - download_last_edit < 1:
+                if now - download_last_edit < 2:
                     return
                 download_last_edit = now
 
@@ -1207,7 +1207,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # 🔥 prevent spam edits
-                if now - upload_last_edit < 1:
+                if now - upload_last_edit < 2:
                     return
                 upload_last_edit = now
 
