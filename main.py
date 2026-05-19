@@ -269,7 +269,7 @@ bot = Client(
     "rename-bot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+    bot_token=BOT_TOKEN,
     workers=100,
     sleep_threshold=30,
     max_concurrent_transmissions=20
