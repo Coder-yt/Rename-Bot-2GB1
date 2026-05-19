@@ -10,9 +10,6 @@ import ffmpeg
 import psutil
 import datetime
 
-import uvloop
-uvloop.install()
-
 def log_event(text: str):
     with open("bot_logs.txt", "a", encoding="utf-8") as f:
         f.write(f"[{datetime.datetime.now()}] {text}\n")
