@@ -270,9 +270,9 @@ bot = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    workers=100,
-    sleep_threshold=30,
-    max_concurrent_transmissions=20
+    workers=120,
+    sleep_threshold=15,
+    max_concurrent_transmissions=10
 )
 
 # ---------------- CHECK FORCE SUB ---------------- #
@@ -1083,7 +1083,10 @@ async def cb(_, query: CallbackQuery):
             active_tasks[user_id] = True
 
             file = msg.document or msg.video
-            is_video = msg.video is not None  
+            is_video = (
+                msg.video is not None or
+                (msg.document and str(msg.document.mime_type).startswith("video"))
+            )  
 
             log_event(f"User {user_id} uploaded file: {file.file_name}")
 
@@ -1107,7 +1110,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # 🔥 prevent too frequent edits
-                if now - download_last_edit < 2:
+                if now - download_last_edit < 1:
                     return
                 download_last_edit = now
 
@@ -1155,16 +1158,26 @@ async def cb(_, query: CallbackQuery):
                 new_name = f"{prefix}{base_name}{suffix}{ext}"
             output = f"temp_{user_id}_{new_name}"
 
-            final = add_metadata(
-                file_path,
-                output,
-                user.get("title", ""),
-                user.get("author", ""),
-                user.get("artist", ""),
-                user.get("audio", ""),
-                user.get("subtitle", ""),
-                user.get("video", "")
-            )
+            if any([
+                user.get("title"),
+                user.get("author"),
+                user.get("artist"),
+                user.get("audio"),
+                user.get("subtitle"),
+                user.get("video")
+            ]):
+                final = add_metadata(
+                    file_path,
+                    output,
+                    user.get("title", ""),
+                    user.get("author", ""),
+                    user.get("artist", ""),
+                    user.get("audio", ""),
+                    user.get("subtitle", ""),
+                    user.get("video", "")
+                )
+            else:
+                final = file_path
 
             if not os.path.exists(final) or os.path.getsize(final) < 100000:
                 final = file_path
@@ -1194,8 +1207,7 @@ async def cb(_, query: CallbackQuery):
 
             duration, width, height = (0, 0, 0)
 
-            if is_video:
-                duration, width, height = get_video_metadata(final)
+            duration, width, height = get_video_metadata(final)
 
             start_time = time.time()
             last_edit = 0
@@ -1210,7 +1222,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # 🔥 prevent spam edits
-                if now - upload_last_edit < 2:
+                if now - upload_last_edit < 1:
                     return
                 upload_last_edit = now
 
@@ -1247,6 +1259,7 @@ async def cb(_, query: CallbackQuery):
                         width=width,
                         height=height,
                         supports_streaming=True,
+                        has_spoiler=False,
                         progress=prog
                     )
 
