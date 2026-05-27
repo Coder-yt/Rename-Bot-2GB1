@@ -1013,6 +1013,80 @@ async def status(_, msg):
 
     await msg.reply_text(text, reply_markup=buttons)
 
+# ----------- STATS COMMAND ------------#
+
+rename_stats = {
+    "total_files": 0,
+    "total_size": 0
+}
+
+def progress_bar_string(percent):
+    filled = int(percent // 10)
+
+    if filled <= 0:
+        bar = "▤□□□□□□□□□"
+    else:
+        bar = "■" * (filled - 1) + "▤" + "□" * (10 - filled)
+
+    return f"[{bar}] {percent:.1f}%"
+
+
+@bot.on_message(filters.command("stats"))
+async def stats(_, msg):
+
+    start = time.time()
+
+    temp = await msg.reply_text("Calculating ping...")
+
+    end = time.time()
+
+    ping = round((end - start) * 1000, 3)
+
+    users_count = await users.count_documents({})
+
+    # RAM
+    ram = psutil.virtual_memory()
+    ram_percent = ram.percent
+    ram_bar = progress_bar_string(ram_percent)
+
+    # CPU
+    cpu_percent = psutil.cpu_percent(interval=1)
+    cpu_bar = progress_bar_string(cpu_percent)
+
+    # DISK
+    disk = psutil.disk_usage('/')
+    disk_percent = disk.percent
+    disk_bar = progress_bar_string(disk_percent)
+
+    total_files = rename_stats["total_files"]
+    total_storage = humanbytes(rename_stats["total_size"])
+
+    text = f"""
+⌬ BOT STATISTICS :
+
+┎ Bᴏᴛ Uᴘᴛɪᴍᴇ : {get_uptime()}
+┃ Cᴜʀʀᴇɴᴛ Pɪɴɢ : {ping}ᴍꜱ
+┖ Tᴏᴛᴀʟ Uꜱᴇʀꜱ : {users_count}
+
+┎ RAM ( MEMORY ):
+┖ {ram_bar}
+
+┎ CPU ( USAGE ) :
+┖ {cpu_bar}
+
+┎ DISK :
+┃ {disk_bar}
+┃ Used : {humanbytes(disk.used)}
+┃ Free : {humanbytes(disk.free)}
+┖ Total : {humanbytes(disk.total)}
+
+┎ RENAME STATISTICS :
+┃ Total Files Renamed : {total_files:,}
+┖ Total Storage Used : {total_storage}
+"""
+
+    await temp.edit_text(text)
+
 # ----------- BAN | UNBAN -------------- #
 
 def is_admin(uid):
@@ -1859,6 +1933,15 @@ async def cb(_, query: CallbackQuery):
             leaderboard_data["weekly"][user_id] += 1
             leaderboard_data["monthly"][user_id] += 1
             leaderboard_data["alltime"][user_id] += 1
+
+            # -------- STATS COUNTER -------- #
+
+            rename_stats["total_files"] += 1
+
+            try:
+                rename_stats["total_size"] += os.path.getsize(final)
+            except:
+                pass
 
             await query.message.delete()
             active_tasks.pop(user_id, None)
