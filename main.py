@@ -545,70 +545,6 @@ async def del_suffix(_, msg):
     await set_user(msg.from_user.id, {"suffix": ""})
     await msg.reply("Sᴜғғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
 
-# ---------------- AUTO RENAME ---------------- #
-
-@bot.on_message(filters.command("autorename"))
-async def autorename_cmd(_, msg):
-
-    if len(msg.command) < 2:
-        return await msg.reply(
-            "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ʀᴇɴᴀᴍᴇ ᴛᴇᴍᴘʟᴀᴛᴇ\n\n"
-            "➤ Example:\n"
-            "/autorename One Piece [S{season} E{episode}] [{quality}] [{audio}] x264 ESubs Anime_UpdatesAU\n\n"
-            "Nᴏᴛᴇ: Dᴏɴ'ᴛ ᴘᴜᴛ .mkv ᴏʀ .mp4 ᴀᴛ ᴛʜᴇ ᴇɴᴅ."
-        )
-
-    template = msg.text.split(None, 1)[1]
-
-    await set_user(
-        msg.from_user.id,
-        {
-            "autorename": template,
-            "episode": 1
-        }
-    )
-
-    await msg.reply_text(
-        f"✅ Aᴜᴛᴏ Rᴇɴᴀᴍᴇ Sᴀᴠᴇᴅ\n\n`{template}`"
-    )
-
-
-@bot.on_message(filters.command("see_autorename"))
-async def see_autorename(_, msg):
-
-    user = await get_user(msg.from_user.id) or {}
-
-    template = user.get("autorename")
-
-    if not template:
-        return await msg.reply(
-            "❌ Nᴏ Aᴜᴛᴏ Rᴇɴᴀᴍᴇ Tᴇᴍᴘʟᴀᴛᴇ Sᴇᴛ"
-        )
-
-    episode = user.get("episode", 1)
-
-    await msg.reply(
-        f"📄 Aᴜᴛᴏ Rᴇɴᴀᴍᴇ Tᴇᴍᴘʟᴀᴛᴇ:\n\n"
-        f"`{template}`\n\n"
-        f"📌 Nᴇxᴛ Eᴘɪsᴏᴅᴇ: `{episode}`"
-    )
-
-
-@bot.on_message(filters.command("del_autorename"))
-async def del_autorename(_, msg):
-
-    await set_user(
-        msg.from_user.id,
-        {
-            "autorename": "",
-            "episode": 1
-        }
-    )
-
-    await msg.reply(
-        "❌ Aᴜᴛᴏ Rᴇɴᴀᴍᴇ Dᴇʟᴇᴛᴇᴅ"
-    )
-
 # ---------------- METADATA ----------------
 @bot.on_message(filters.command("metadata"))
 async def metadata(_, msg):
@@ -1031,7 +967,6 @@ async def get_stats():
 
     return data
 
-
 async def update_stats(file_size):
 
     await db.stats.update_one(
@@ -1044,7 +979,6 @@ async def update_stats(file_size):
         },
         upsert=True
     )
-
 
 # -------- LEADERBOARD DATABASE -------- #
 
@@ -1701,84 +1635,6 @@ async def cb(_, query: CallbackQuery):
             original_name = safe_name(original_name)
 
             base_name, ext = os.path.splitext(original_name)
-
-            # -------- AUTO RENAME -------- #
-
-            autorename = user.get("autorename", "")
-            episode_no = int(user.get("episode", 1))
-
-            quality = "Unknown"
-            audio = "Unknown"
-
-            name_lower = base_name.lower()
-
-            # -------- QUALITY DETECT -------- #
-
-            quality_list = [
-                "480p",
-                "720p",
-                "1080p",
-                "HDRip",
-                "2160p",
-                "4k"
-            ]
-
-            for q in quality_list:
-                if q.lower() in name_lower:
-                   quality = q
-                   break
-
-            # -------- AUDIO DETECT -------- #
-
-            audio_list = [
-                "Hindi",
-                "Tamil",
-                "Telugu",
-                "English",
-                "Japanese",
-                "Chinese",
-                "Malayalam",
-                "Kannada",
-                "Dual Audio",
-                "Multi"
-            ]
-
-            for a in audio_list:
-                if a.lower() in name_lower:
-                    audio = a
-                    break
-
-            # -------- USE AUTO RENAME -------- #
-
-            if autorename:
-
-                try:
-
-                    new_base = autorename.format(
-                        season="01",
-                        episode=str(episode_no).zfill(2),
-                        quality=quality,
-                        audio=audio
-                    )
-
-                    new_name = f"{new_base}{ext}"
-
-                    # save next episode number
-                    await set_user(
-                        user_id,
-                        {
-                            "episode": episode_no + 1
-                        }
-                    )
-
-                except Exception as e:
-
-                    print("Autorename Error:", e)
-
-                    if caption:
-                        new_name = f"{caption}{ext}"
-                    else:
-                        new_name = f"{prefix}{base_name}{suffix}{ext}"
 
             # -------- NORMAL RENAME -------- #
 
