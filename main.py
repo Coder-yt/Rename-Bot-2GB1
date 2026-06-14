@@ -1660,9 +1660,10 @@ async def cb(_, query: CallbackQuery):
 
             # -------- NORMAL RENAME -------- #
 
-            final_name = caption if caption else file.file_name
+            final_name = caption if caption else os.path.splitext(file.file_name)[0]
 
-            base_name, ext = os.path.splitext(file.file_name)
+            # remove old underscores from filename
+            final_name = final_name.replace("_", " ")
 
             new_name = final_name + ext
 
@@ -1695,15 +1696,15 @@ async def cb(_, query: CallbackQuery):
             if not os.path.exists(final) or os.path.getsize(final) < 100000:
                 final = file_path
                 
-            # -------- FIX REAL FILE NAME -------- #
-
-            fixed_file = new_name
+            # -------- FIX UPLOAD FILE NAME -------- #
 
             import shutil
 
-            shutil.copy(final, fixed_file)
+            rename_path = f"/tmp/{new_name}"
 
-            final = fixed_file
+            shutil.copy(final, rename_path)
+ 
+            final = rename_path
 
         # -------- THUMB FIX -------- #
             thumb_path = None
