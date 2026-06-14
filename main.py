@@ -1537,7 +1537,7 @@ async def cb(_, query: CallbackQuery):
             await query.message.delete()
 
         elif data.startswith("lb_"):
- 
+
             await query.answer()  
 
             period = data.split("_")[1]
@@ -1660,10 +1660,9 @@ async def cb(_, query: CallbackQuery):
 
             # -------- NORMAL RENAME -------- #
 
-            final_name = caption if caption else os.path.splitext(file.file_name)[0]
+            final_name = caption if caption else file.file_name
 
-            # remove old underscores from filename
-            final_name = final_name.replace("_", " ")
+            base_name, ext = os.path.splitext(file.file_name)
 
             new_name = final_name + ext
 
@@ -1695,16 +1694,16 @@ async def cb(_, query: CallbackQuery):
 
             if not os.path.exists(final) or os.path.getsize(final) < 100000:
                 final = file_path
-                
-            # -------- FIX UPLOAD FILE NAME -------- #
+
+            # -------- FIX REAL FILE NAME -------- #
+
+            fixed_file = new_name
 
             import shutil
 
-            rename_path = f"/tmp/{new_name}"
+            shutil.copy(final, fixed_file)
 
-            shutil.copy(final, rename_path)
- 
-            final = rename_path
+            final = fixed_file
 
         # -------- THUMB FIX -------- #
             thumb_path = None
@@ -1819,7 +1818,7 @@ async def cb(_, query: CallbackQuery):
                         progress=prog, 
                         disable_notification=True
                     )
-                    
+
                     await update_leaderboard(user_id)
 
                     dump_id = dump_channels.get(user_id)
@@ -1854,7 +1853,7 @@ async def cb(_, query: CallbackQuery):
                         progress=prog,
                         disable_notification=True
                     )
-                    
+
                     await update_leaderboard(user_id)
 
                     dump_id = dump_channels.get(user_id)
@@ -1884,7 +1883,7 @@ async def cb(_, query: CallbackQuery):
                 return
 
             finally:
-                
+
                 # -------- FILE SIZE -------- #
                 file_size = 0
                 try:
