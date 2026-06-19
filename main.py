@@ -770,6 +770,9 @@ async def upload_settings(_, msg):
 
     user_id = msg.from_user.id
 
+    users = await db.users.count_documents({})
+    bots = await db.bots.count_documents({})
+
     mode = upload_modes.get(user_id, "main").upper()
 
     selected_bot = upload_bots.get(user_id)
@@ -795,6 +798,14 @@ Cʜᴏᴏsᴇ ᴡʜɪᴄʜ ʙᴏᴛ sʜᴏᴜʟᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴇ ғ
 𝖢𝗁𝖾𝖼𝗄𝗌:
 Mᴀɪɴ ᴍᴏᴅᴇ ɴᴇᴇᴅs ᴍᴀɪɴ ʙᴏᴛ ᴀᴄᴄᴇss ɪғ ʏᴏᴜ ᴜsᴇ ᴅᴜᴍᴘ sᴏ ғɪʀsᴛ ᴍᴀᴋᴇ ᴛʜᴇ ʙᴏᴛ ᴀᴅᴍɪɴ!
 Pᴇʀsᴏɴᴀʟ ᴍᴏᴅᴇ ɴᴇᴇᴅs ʙᴏᴛʜ ᴍᴀɪɴ ʙᴏᴛ ᴀɴᴅ ᴄʜᴏsᴇɴ ᴜᴘʟᴏᴀᴅ ʙᴏᴛ ᴀs ᴀᴅᴍɪɴs ɪɴ ʏᴏᴜʀ ᴅᴜᴍᴘ ᴄʜᴀɴɴᴇʟ
+"""
+
+    text += f"""
+
+🤖 Bot Stats
+
+👥 Users: {users}
+🔐 Added Bots: {bots}
 """
 
     buttons = InlineKeyboardMarkup([
