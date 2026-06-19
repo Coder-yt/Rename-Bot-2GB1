@@ -916,7 +916,8 @@ async def choose(_, msg):
 
     if await is_banned(msg.from_user.id):
         return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
-        # -------- FILE SIZE CHECK -------- #
+
+    # -------- FILE SIZE CHECK -------- #
 
     media = msg.document or msg.video
 
@@ -936,7 +937,20 @@ async def choose(_, msg):
         ]
     ])
 
-    await msg.reply("𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲:", reply_markup=buttons)
+    text = """
+<b>𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲</b>
+
+Pᴏᴡᴇʀᴇᴅ Bʏ : <a href="https://t.me/Anime_UpdatesAU">Aɴɪᴍᴇ Uᴘᴅᴀᴛᴇs AU</a>
+
+Oᴡɴᴇʀ: <a href="https://t.me/Mr_Mohammed_29">ᴍᴏʜᴀᴍᴍᴇᴅ</a>
+"""
+
+    await msg.reply_photo(
+         photo="https://graph.org/file/51f7bf1769486242f1180-03990f535eec7e1aba.jpg",
+         caption=text,
+         reply_markup=buttons,
+         parse_mode=ParseMode.HTML
+    )
 
 #---------- Cancel ------------#
 @bot.on_message(filters.command("cancel"))
@@ -1247,7 +1261,7 @@ async def cb(_, query: CallbackQuery):
         Lᴀɴɢᴜᴀɢᴇ : <a href="https://www.python.org/downloads/">Pʏᴛʜᴏɴ 𝟹</a>
         Dᴀᴛᴀʙᴀsᴇ : <a href="https://www.mongodb.com/">ᴍᴏɴɢᴏ ᴅʙ</a>
         ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Anime_UpdatesAU">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
-        ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/AU_Bot_Discussion">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
+        ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/Mr_Mohammed_29">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
         ʙᴜɪʟᴅ sᴛᴀᴛᴜs : <a href="https://t.me/Anime_UpdatesAU">ᴠ3 [sᴛᴀʙʟᴇ]</a>
         """
 
