@@ -770,6 +770,9 @@ async def upload_settings(_, msg):
 
     user_id = msg.from_user.id
 
+    users = await db.users.count_documents({})
+    bots = await db.bots.count_documents({})
+
     mode = upload_modes.get(user_id, "main").upper()
 
     selected_bot = upload_bots.get(user_id)
@@ -795,6 +798,14 @@ Cʜᴏᴏsᴇ ᴡʜɪᴄʜ ʙᴏᴛ sʜᴏᴜʟᴅ ᴜᴘʟᴏᴀᴅ ᴛʜᴇ ғ
 𝖢𝗁𝖾𝖼𝗄𝗌:
 Mᴀɪɴ ᴍᴏᴅᴇ ɴᴇᴇᴅs ᴍᴀɪɴ ʙᴏᴛ ᴀᴄᴄᴇss ɪғ ʏᴏᴜ ᴜsᴇ ᴅᴜᴍᴘ sᴏ ғɪʀsᴛ ᴍᴀᴋᴇ ᴛʜᴇ ʙᴏᴛ ᴀᴅᴍɪɴ!
 Pᴇʀsᴏɴᴀʟ ᴍᴏᴅᴇ ɴᴇᴇᴅs ʙᴏᴛʜ ᴍᴀɪɴ ʙᴏᴛ ᴀɴᴅ ᴄʜᴏsᴇɴ ᴜᴘʟᴏᴀᴅ ʙᴏᴛ ᴀs ᴀᴅᴍɪɴs ɪɴ ʏᴏᴜʀ ᴅᴜᴍᴘ ᴄʜᴀɴɴᴇʟ
+"""
+
+    text += f"""
+
+🤖 Bot Stats
+
+👥 Users: {users}
+🔐 Added Bots: {bots}
 """
 
     buttons = InlineKeyboardMarkup([
@@ -905,7 +916,8 @@ async def choose(_, msg):
 
     if await is_banned(msg.from_user.id):
         return await msg.reply("🚫 Yᴏᴜ Aʀᴇ Bᴀɴɴᴇᴅ.")
-        # -------- FILE SIZE CHECK -------- #
+
+    # -------- FILE SIZE CHECK -------- #
 
     media = msg.document or msg.video
 
@@ -925,7 +937,20 @@ async def choose(_, msg):
         ]
     ])
 
-    await msg.reply("𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲:", reply_markup=buttons)
+    text = """
+<b>𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲</b>
+
+Pᴏᴡᴇʀᴇᴅ Bʏ : <a href="https://t.me/Anime_UpdatesAU">Aɴɪᴍᴇ Uᴘᴅᴀᴛᴇs AU</a>
+
+Oᴡɴᴇʀ: <a href="https://t.me/Mr_Mohammed_29">ᴍᴏʜᴀᴍᴍᴇᴅ</a>
+"""
+
+    await msg.reply_photo(
+         photo="https://graph.org/file/51f7bf1769486242f1180-03990f535eec7e1aba.jpg",
+         caption=text,
+         reply_markup=buttons,
+         parse_mode=ParseMode.HTML
+    )
 
 #---------- Cancel ------------#
 @bot.on_message(filters.command("cancel"))
@@ -1236,7 +1261,7 @@ async def cb(_, query: CallbackQuery):
         Lᴀɴɢᴜᴀɢᴇ : <a href="https://www.python.org/downloads/">Pʏᴛʜᴏɴ 𝟹</a>
         Dᴀᴛᴀʙᴀsᴇ : <a href="https://www.mongodb.com/">ᴍᴏɴɢᴏ ᴅʙ</a>
         ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Anime_UpdatesAU">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
-        ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/AU_Bot_Discussion">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
+        ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/Mr_Mohammed_29">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
         ʙᴜɪʟᴅ sᴛᴀᴛᴜs : <a href="https://t.me/Anime_UpdatesAU">ᴠ3 [sᴛᴀʙʟᴇ]</a>
         """
 
@@ -1537,7 +1562,7 @@ async def cb(_, query: CallbackQuery):
             await query.message.delete()
 
         elif data.startswith("lb_"):
- 
+
             await query.answer()  
 
             period = data.split("_")[1]
@@ -1694,7 +1719,7 @@ async def cb(_, query: CallbackQuery):
 
             if not os.path.exists(final) or os.path.getsize(final) < 100000:
                 final = file_path
-                
+
             # -------- FIX REAL FILE NAME -------- #
 
             fixed_file = new_name
@@ -1818,7 +1843,7 @@ async def cb(_, query: CallbackQuery):
                         progress=prog, 
                         disable_notification=True
                     )
-                    
+
                     await update_leaderboard(user_id)
 
                     dump_id = dump_channels.get(user_id)
@@ -1853,7 +1878,7 @@ async def cb(_, query: CallbackQuery):
                         progress=prog,
                         disable_notification=True
                     )
-                    
+
                     await update_leaderboard(user_id)
 
                     dump_id = dump_channels.get(user_id)
@@ -1883,7 +1908,7 @@ async def cb(_, query: CallbackQuery):
                 return
 
             finally:
-                
+
                 # -------- FILE SIZE -------- #
                 file_size = 0
                 try:
