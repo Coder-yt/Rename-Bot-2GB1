@@ -1910,7 +1910,10 @@ async def cb(_, query: CallbackQuery):
                     print("ᴘᴇʀsᴏɴᴀʟ ʙᴏᴛ ᴇʀʀᴏʀ:", e)
 
                     upload_client = bot
+                    
            # -------- SEND FILE -------- #
+            file_size = 0
+                
             try:
 
                # -------- VIDEO MODE -------- #
@@ -1931,6 +1934,11 @@ async def cb(_, query: CallbackQuery):
                         progress=prog, 
                         disable_notification=True
                     )
+                    
+                    try:
+                        file_size = os.path.getsize(final)
+                    except:
+                        file_size = 0
 
                     await db.users.update_one(
                         {"_id": msg.from_user.id},
@@ -1985,6 +1993,11 @@ async def cb(_, query: CallbackQuery):
                         progress=prog,
                         disable_notification=True
                     )
+
+                    try:
+                        file_size = os.path.getsize(final)
+                    except:
+                        file_size = 0
 
                     await db.users.update_one(
                         {"_id": msg.from_user.id},
