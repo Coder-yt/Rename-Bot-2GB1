@@ -1,0 +1,35 @@
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
+services:
+  - name: Rename-Bot-2GB
+    type: web
+
+    build:
+      type: buildpack
+
+    run:
+      command: python main.py
+
+    ports:
+      - port: 8080
+        protocol: http
+
+    env:
+      - key: API_ID
+        value: ""
+      - key: API_HASH
+        value: ""
+      - key: BOT_TOKEN
+        value: ""
+      - key: MONGO_URI
+        value: ""
+      - key: OWNER_ID
+        value: ""
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
