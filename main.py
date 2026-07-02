@@ -5,11 +5,29 @@
 # Owner @Mr_Mohammed_29 
 # ------------------------- #
 import os
+import re
 import time
 import asyncio
 import ffmpeg
 import psutil
 import datetime
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
+from PIL import Image
+from pyrogram import Client, filters
+from pyrogram.enums import ParseMode
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import CallbackQuery
+from database import *
+from utils import progress_bar
+from ffmpeg_utils import add_metadata
+from keep_alive import keep_alive
+
 
 # ------------------------- #
 # Don't Remove Credit 
@@ -29,18 +47,30 @@ if not os.path.exists("thumbs"):
 START_TIME = time.time()
 
 # ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 def get_uptime():
     seconds = int(time.time() - START_TIME)
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
     return f"{h}h {m}m {s}s"
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def get_memory():
     process = psutil.Process(os.getpid())
     mem = process.memory_info().rss / (1024 * 1024)
     return f"{mem:.2f} MB"
-
+    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 async def get_ping():
     start = time.time()
@@ -49,27 +79,44 @@ async def get_ping():
     return f"{round((end - start) * 1000)} ms"
 
 # ------------------------- #
-
-from PIL import Image
-from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
-from pyrogram.enums import ChatMemberStatus
-
-active_tasks = {}
-
-# ---------------- FORCE SUB ---------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # -------- MAX FILE LIMIT -------- #
 
 MAX_FILE_SIZE = 2097152000  # 2GB 
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 FORCE_SUB_CHANNEL = None
 FREE_MODE = True
 
-user_mode = {}
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 download_last_edit = 0
 upload_last_edit = 0
+
+# -------- GLOBAL -------- #
+
+upload_modes = {}
+upload_bots = {}
+user_files = {}
+user_mode = {}
+active_tasks = {}
+personal_clients = {}
+dump_channels = {}
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def parse_duration(value: str):
     value = value.lower().strip()
@@ -93,14 +140,11 @@ def parse_duration(value: str):
         return int(value[:-1]) * 31536000
 
     return None
-
-# ------------------------- #
+    
 # ------------------------- #
 # Don't Remove Credit 
 # Owner @Mr_Mohammed_29
 # ------------------------- #
-
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def get_home_text(user):
     return (
@@ -113,6 +157,10 @@ def get_home_text(user):
         "›› ᴛʜɪs ʙᴏᴛ ɪs ᴅᴇᴘʟᴏʏᴇᴅ ʙʏ: <a href='https://t.me/Mr_Mohammed_29'>ᴍᴏʜᴀᴍᴍᴇᴅ</a>"
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def get_home_buttons():
     update_url = UPDATE_CHANNEL
@@ -132,7 +180,10 @@ def get_home_buttons():
         ]
     ])
 
-from pyrogram.types import CallbackQuery
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 from config import (
     API_ID,
@@ -144,20 +195,20 @@ from config import (
     UPDATE_CHANNEL
 )
 
-ADMINS = [OWNER_ID]
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
-user_files = {}
+ADMINS = [OWNER_ID]
 
 print("LOG_CHANNEL:", LOG_CHANNEL)
 print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 
-from database import *
-
-dump_channels = {}
-
-from utils import progress_bar
-from ffmpeg_utils import add_metadata
-from keep_alive import keep_alive
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def humanbytes(size):
     if not size:
@@ -173,15 +224,28 @@ def humanbytes(size):
 
     return str(round(size, 2)) + " " + Dic_powerN[n]
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 def time_formatter(seconds):
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
     return f"{h}h {m}m {s}s"
 
-import re
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def safe_name(name):
     return re.sub(r'[\\\\/:*?"<>|]', '_', name)
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
@@ -205,6 +269,11 @@ async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
     return None
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 def calc_progress(current, total, start_time, last_current=0, last_time=0):
     now = time.time()
 
@@ -222,6 +291,10 @@ def calc_progress(current, total, start_time, last_current=0, last_time=0):
     eta = remaining / speed if speed > 0 else 0
 
     return percent, speed, eta
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
 # ------------------------- #
 
 def smart_thumb(path):
@@ -240,6 +313,10 @@ def smart_thumb(path):
         return path
     except:
         return None
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
 # ------------------------- #
 
 def generate_video_thumb(video_path, output):
@@ -254,7 +331,10 @@ def generate_video_thumb(video_path, output):
     except:
         return None
 
-#---------------------------#
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 def get_video_metadata(path):
     try:
@@ -274,6 +354,9 @@ def get_video_metadata(path):
         return 0, 0, 0
 
 # ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 bot = Client(
     "rename-bot",
@@ -284,6 +367,11 @@ bot = Client(
     sleep_threshold=15,
     max_concurrent_transmissions=7
 )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- CHECK FORCE SUB ---------------- #
 
@@ -313,6 +401,11 @@ async def check_force_sub(client, user_id):
         print("FORCE SUB ERROR:", e)
         return False
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- FORCE SUB COMMANDS ---------------- #
 
 @bot.on_message(filters.private & filters.command("fsub"))
@@ -339,6 +432,10 @@ async def add_fsub(client, message):
         f"✅ Fᴏʀᴄᴇ Sᴜʙsᴄʀɪʙᴇᴅ Cʜᴀɴɴᴇʟ Aᴅᴅᴇᴅ\n\nCʜᴀɴɴᴇʟ : {channel}"
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.private & filters.command("nofsub"))
 async def remove_fsub(client, message):
@@ -353,6 +450,11 @@ async def remove_fsub(client, message):
     await message.reply_text(
         "✅ Fᴏʀᴄᴇ Sᴜʙsᴄʀɪʙᴇᴅ Cʜᴀɴɴᴇʟ Rᴇᴍᴏᴠᴇᴅ"
     )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- FREE MODE ---------------- #
 
@@ -370,6 +472,11 @@ async def free_mode(client, message):
         "✅ Fʀᴇᴇ Mᴏᴅᴇ Eɴᴀʙʟᴇᴅ\n\n ○ Nᴏᴡ Usᴇʀs Cᴀɴ Usᴇ Tʜᴇ Bᴏᴛ ○"
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # --------------- DISABLE MODE --------------- #
 @bot.on_message(filters.private & filters.command("disablemode"))
 async def disable_mode(client, message):
@@ -384,6 +491,11 @@ async def disable_mode(client, message):
     await message.reply_text(
         "🚫 Fʀᴇᴇ Mᴏᴅᴇ Dɪsᴀʙʟᴇᴅ\n\n ○ Nᴏᴡ Usᴇʀs Cᴀɴɴᴏᴛ Usᴇ Tʜᴇ Bᴏᴛ ○"
     )
+    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- START ----------------
 @bot.on_message(filters.command("start"))
@@ -482,6 +594,11 @@ async def start(client, message):
             )
     except Exception as e:
         print("START ERROR:", e)
+        
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- PRIVACY ---------------- #
 
@@ -515,8 +632,14 @@ async def privacy(client, message):
 """,
         reply_markup=buttons
     )
-      
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- CAPTION ----------------
+
 @bot.on_message(filters.command("set_caption"))
 async def set_caption(_, msg):
 
@@ -549,7 +672,13 @@ async def del_caption(_, msg):
     await set_user(msg.from_user.id, {"caption": ""})
     await msg.reply("❌️ Cᴀᴘᴛɪᴏɴ Dᴇʟᴇᴛᴇᴅ")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- PREFIX / SUFFIX ----------------
+
 @bot.on_message(filters.command("set_prefix"))
 async def set_prefix(_, msg):
 
@@ -560,6 +689,10 @@ async def set_prefix(_, msg):
     await set_user(msg.from_user.id, {"prefix": text})
     await msg.reply("Pʀᴇғɪx Sᴀᴠᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ✨")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("set_suffix"))
 async def set_suffix(_, msg):
@@ -571,6 +704,10 @@ async def set_suffix(_, msg):
     await set_user(msg.from_user.id, {"suffix": text})
     await msg.reply("Sᴜғғɪx Sᴀᴠᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ✨")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("see_prefix"))
 async def see_prefix(_, msg):
@@ -583,13 +720,21 @@ async def see_prefix(_, msg):
 
     await msg.reply(f"Current prefix: `{prefix}`")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("del_prefix"))
 async def del_prefix(_, msg):
 
     await set_user(msg.from_user.id, {"prefix": ""})
     await msg.reply("Pʀᴇғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
-
+    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("see_suffix"))
 async def see_suffix(_, msg):
@@ -602,6 +747,10 @@ async def see_suffix(_, msg):
 
     await msg.reply(f"Current suffix: `{suffix}`")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("del_suffix"))
 async def del_suffix(_, msg):
@@ -609,7 +758,13 @@ async def del_suffix(_, msg):
     await set_user(msg.from_user.id, {"suffix": ""})
     await msg.reply("Sᴜғғɪx Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ ⚡️")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- METADATA ----------------
+
 @bot.on_message(filters.command("metadata"))
 async def metadata(_, msg):
 
@@ -650,7 +805,13 @@ async def metadata(_, msg):
         disable_web_page_preview=True
     )
 
+    # ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- METADATA SETTERS ----------------
+
 @bot.on_message(filters.command("settitle"))
 async def settitle(_, msg):
 
@@ -660,7 +821,6 @@ async def settitle(_, msg):
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"title": text})
     await msg.reply("✅ Tɪᴛʟᴇ Sᴀᴠᴇᴅ")
-
 
 @bot.on_message(filters.command("setauthor"))
 async def setauthor(_, msg):
@@ -715,6 +875,11 @@ async def setvideo(_, msg):
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"video": text})
     await msg.reply("✅ Vɪᴅᴇᴏ Mᴇᴛᴀᴅᴀᴛᴀ Sᴀᴠᴇᴅ")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- SEE METADATA ---------------- #
 
@@ -799,11 +964,12 @@ async def del_dump(_, msg):
 
     await msg.reply("✅ 𝗗𝘂𝗺𝗽 𝗖𝗵𝗮𝗻𝗻𝗲𝗹 𝗗𝗲𝗹𝗲𝘁𝗲𝗱")
 
-# ---------------- UPLOAD SYSTEM ---------------- #
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
-upload_modes = {}
-upload_bots = {}
-personal_clients = {}
+# ---------------- UPLOAD SYSTEM ---------------- #
 
 @bot.on_message(filters.command("ub"))
 async def upload_settings(_, msg):
@@ -882,6 +1048,10 @@ Pᴇʀsᴏɴᴀʟ ᴍᴏᴅᴇ ɴᴇᴇᴅs ʙᴏᴛʜ ᴍᴀɪɴ ʙᴏᴛ ᴀɴ
         reply_markup=buttons
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- ADD PERSONAL BOT ---------------- #
 
@@ -939,6 +1109,10 @@ async def add_bot(_, msg):
         f"✅️ Pᴇʀsᴏɴᴀʟ Uᴘʟᴏᴀᴅ Bᴏᴛ Sᴀᴠᴇᴅ\n\n🤖 @{me.username}"
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- DELETE BOT ---------------- #
 
@@ -978,6 +1152,11 @@ async def del_bot(_, msg):
             "❌ Nᴏ Pᴇʀsᴏɴᴀʟ Bᴏᴛ Sᴇᴛ"
         )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
@@ -1001,6 +1180,11 @@ async def del_thumb(_, msg):
 
     await set_user(msg.from_user.id, {"thumb": ""})
     await msg.reply("❌️ Tʜᴜᴍʙɴᴀɪʟ Dᴇʟᴇᴛᴇᴅ")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- FILE / VIDEO CHOOSER ----------------
 @bot.on_message(filters.document | filters.video)
@@ -1039,8 +1223,6 @@ async def choose(_, msg):
     <b>Fɪʟᴇ Nᴀᴍᴇ:</b> <code>{file_name}</code>
 
  <b>𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲</b>
-
- Pᴏᴡᴇʀᴇᴅ Bʏ : <a href="https://t.me/Anime_UpdatesAU">Aɴɪᴍᴇ Uᴘᴅᴀᴛᴇs AU</a>
     """
 
     if msg.document:
@@ -1056,8 +1238,14 @@ async def choose(_, msg):
             reply_markup=buttons,
             parse_mode=ParseMode.HTML
         )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
         
 #---------- Cancel ------------#
+
 @bot.on_message(filters.command("cancel"))
 async def cancel_cmd(_, msg):
     user_id = msg.from_user.id
@@ -1067,6 +1255,11 @@ async def cancel_cmd(_, msg):
         await msg.reply("❌ Pʀᴏᴄᴇss Cᴀɴᴄᴇʟʟᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ")
     else:
         await msg.reply("⚠️ Nᴏ Aᴄᴛɪᴠᴇ Tᴀsᴋ Tᴏ Cᴀɴᴄᴇʟ")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 #----------- Status ------------#
 
@@ -1095,6 +1288,11 @@ async def status(_, msg):
     ])
 
     await msg.reply_text(text, reply_markup=buttons)
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # -------- STATS DATABASE -------- #
 
@@ -1133,6 +1331,7 @@ async def update_stats(file_size):
 # ------------------------- #
 
 # ----------- RENAMED COMMAND ---------- #
+    
 @bot.on_message(filters.command("renamed"))
 async def renamed(_, msg):
 
@@ -1152,6 +1351,12 @@ async def renamed(_, msg):
         photo="https://graph.org/file/f4a2dc831f6a6a988d450-e2f741765425dabb79.jpg",
         caption=text
     )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # -------- LEADERBOARD DATABASE -------- #
 
 async def update_leaderboard(user_id):
@@ -1171,6 +1376,11 @@ async def update_leaderboard(user_id):
         },
         upsert=True
     )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ----------- STATS COMMAND ------------#
 
@@ -1305,6 +1515,11 @@ async def addedbots(_, msg):
         caption=text
     )
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ----------- BAN | UNBAN -------------- #
 
 def is_admin(uid):
@@ -1334,6 +1549,10 @@ async def ban(_, msg):
 
     await msg.reply(f"🚫 𝗨𝘀𝗲𝗿 `{uid}` 𝗯𝗮𝗻𝗻𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆")
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 @bot.on_message(filters.command("unban"))
 async def unban(_, msg):
@@ -1357,7 +1576,12 @@ async def unban(_, msg):
     log_event(f"User unbanned: {uid}")
 
     await msg.reply(f"✅ 𝗨𝘀𝗲𝗿 `{uid}` 𝗨𝗻𝗯𝗮𝗻𝗻𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆")
-    
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ------------LOGS------------- #
 @bot.on_message(filters.command("logs"))
 async def logs(_, msg):
@@ -1373,6 +1597,11 @@ async def logs(_, msg):
 
     except:
         await msg.reply("𝗡𝗢 𝗟𝗢𝗚𝗦 𝗙𝗢𝗨𝗡𝗗 ❌")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # -------------BROADCAST------------ #
 @bot.on_message(filters.command("broadcast"))
@@ -1412,6 +1641,11 @@ async def broadcast(_, msg):
 
     except Exception as e:
         await msg.reply(f"❌ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗘𝗿𝗿𝗼𝗿: {e}")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------- Callback --------------- #
 
@@ -1548,6 +1782,11 @@ async def cb(_, query: CallbackQuery):
 
         elif data == "owner":
             await query.message.edit_text(f"👑 Owner ID: {OWNER_ID}")
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
         # ---------------- UPLOAD MODE CALLBACKS ---------------- #
 
@@ -1800,7 +2039,12 @@ async def cb(_, query: CallbackQuery):
 
             await query.message.edit_text("𝗣𝗿𝗼𝗰𝗲𝘀𝘀 𝗖𝗮𝗻𝗰𝗲𝗹𝗹𝗲𝗱")
             return
-
+            
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+        
      # ----------- Callback -------------- #
 
         elif data in ["file", "video"]:
@@ -1843,8 +2087,6 @@ async def cb(_, query: CallbackQuery):
 
             async def dprog(current, total):
 
-                await asyncio.sleep(0)
-
                 nonlocal last_edit
 
                 if not active_tasks.get(user_id):
@@ -1853,7 +2095,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # prevent too frequent edits
-                if now - last_edit < 1:
+                if now - last_edit < 2:
                     return
 
                 last_edit = now
@@ -1899,6 +2141,11 @@ async def cb(_, query: CallbackQuery):
 
             original_name = file.file_name if hasattr(file, "file_name") else "video.mp4"
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
             # -------- NORMAL RENAME -------- #
 
             final_name = caption if caption else file.file_name
@@ -1938,6 +2185,11 @@ async def cb(_, query: CallbackQuery):
             if not os.path.exists(final) or os.path.getsize(final) < 100000:
                 final = file_path
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
             # -------- FIX REAL FILE NAME -------- #
 
             fixed_file = new_name
@@ -1948,6 +2200,11 @@ async def cb(_, query: CallbackQuery):
 
             final = fixed_file
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
         # -------- THUMB FIX -------- #
             thumb_path = None
             try:
@@ -1964,7 +2221,12 @@ async def cb(_, query: CallbackQuery):
 
             if not thumb_path or not os.path.exists(thumb_path):
                 thumb_path = None
-
+                
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
         # -------- UPLOAD START -------- #
             await progress_msg.edit_text(
                 "📤 Uᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ..."
@@ -1983,8 +2245,6 @@ async def cb(_, query: CallbackQuery):
 
             async def prog(current, total):
 
-                await asyncio.sleep(0)
-
                 nonlocal last_edit
 
                 if not active_tasks.get(user_id):
@@ -1993,7 +2253,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # prevent spam edits
-                if now - last_edit < 1:
+                if now - last_edit < 2:
                     return
 
                 last_edit = now
@@ -2020,39 +2280,46 @@ async def cb(_, query: CallbackQuery):
                     )
                 except:
                     pass
-
+                    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
             # -------- SELECT UPLOAD CLIENT -------- #
 
             upload_client = bot
-            personal_bot = None
 
             mode_selected = upload_modes.get(user_id, "main")
-
             token = upload_bots.get(user_id)
 
-            # use personal bot ONLY in personal mode
             if mode_selected == "personal" and token:
 
                 try:
+                    if user_id not in personal_clients:
 
-                    personal_bot = Client(
-                        name=f"upload_{user_id}",
-                        api_id=API_ID,
-                        api_hash=API_HASH,
-                        bot_token=token,
-                        in_memory=True
-                    )
+                        personal_clients[user_id] = Client(
+                            name=f"upload_{user_id}",
+                            api_id=API_ID,
+                            api_hash=API_HASH,
+                            bot_token=token,
+                            in_memory=True
+                        )
 
-                    await personal_bot.start()
-                    upload_client = personal_bot
+                        await personal_clients[user_id].start()
 
-                    personal_clients[user_id] = personal_bot
+                        upload_client = personal_clients[user_id]
 
                 except Exception as e:
                     print("ᴘᴇʀsᴏɴᴀʟ ʙᴏᴛ ᴇʀʀᴏʀ:", e)
-
+                    
                     upload_client = bot
-
+                    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
            # -------- SEND FILE -------- #
             file_size = 0
 
@@ -2120,7 +2387,12 @@ async def cb(_, query: CallbackQuery):
 
                         except Exception as e:
                             print("Dᴜᴍᴘ Eʀʀᴏʀ:", e)
-
+                            
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+                
                # -------- DOCUMENT MODE -------- #
                 else:
 
@@ -2188,13 +2460,23 @@ async def cb(_, query: CallbackQuery):
 
             finally:
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+                
                 # -------- FILE SIZE -------- #
                 file_size = 0
                 try:
                     file_size = os.path.getsize(final)
                 except:
                     pass
-
+                    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+                
                 # -------- CLEANUP -------- #
 
                 try:
@@ -2210,15 +2492,12 @@ async def cb(_, query: CallbackQuery):
                         os.remove(thumb_path)
                 except Exception:
                     pass
-                # -------- STOP PERSONAL BOT -------- #
-
-                if personal_bot:
-                    try:
-                        await personal_bot.stop()
-                        print("Personal bot stopped")
-                    except Exception as e:
-                        print("Stop error:", e)
-
+                    
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+            
             # -------- STATS COUNTER -------- #
 
             await update_stats(file_size)
@@ -2235,6 +2514,11 @@ async def cb(_, query: CallbackQuery):
             return
 
         print("Callback Error:", e)
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- LEADERBOARD FUNCTION ---------------- #
 
@@ -2268,6 +2552,11 @@ async def generate_leaderboard(period):
 
     return text
 
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- LEADERBOARD COMMAND ---------------- #
 
 @bot.on_message(filters.private & filters.command("leaderboard"))
@@ -2290,6 +2579,11 @@ async def leaderboard(_, msg):
         text,
         reply_markup=buttons
     )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
 # ---------------- USER INFO ---------------- #
 
@@ -2352,6 +2646,11 @@ async def user_info(_, msg):
         reply_markup=buttons
         )
 
+#------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
 # ---------------- DONATE ---------------- #
 
 @bot.on_message(filters.private & filters.command("donate"))
@@ -2398,6 +2697,8 @@ Tᴏ Dᴇᴠᴇʟᴏᴘᴇʀ
 # Owner @Mr_Mohammed_29
 # ------------------------- #
 
+# --------------- ALIVE ---------------- #
+
 @bot.on_message(filters.command("alive"))
 async def alive(client, message):
 
@@ -2409,9 +2710,14 @@ async def alive(client, message):
         )
     )
 
-# ---------------- RUN ----------------
-keep_alive()
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
 
+# ---------------- RUN ----------------
+
+keep_alive()
 print("""
 
 ╭──────────────────────╮
