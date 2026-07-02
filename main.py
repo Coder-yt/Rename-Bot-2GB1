@@ -363,8 +363,8 @@ bot = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    workers=40,
-    sleep_threshold=15,
+    workers=45,
+    sleep_threshold=18,
     max_concurrent_transmissions=7
 )
 
@@ -2095,7 +2095,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # prevent too frequent edits
-                if now - last_edit < 2:
+                if now - last_edit < 1:
                     return
 
                 last_edit = now
@@ -2253,7 +2253,7 @@ async def cb(_, query: CallbackQuery):
                 now = time.time()
 
                 # prevent spam edits
-                if now - last_edit < 2:
+                if now - last_edit < 1:
                     return
 
                 last_edit = now
