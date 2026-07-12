@@ -12,6 +12,12 @@ ffmpeg-python
 psutil 
 Pillow==10.4.0
 aiohttp
+gTTS
+qrcode
+Pillow
+imageio
+requests
+pytz
 
 # ------------------------- #
 # Don't Remove Credit 
