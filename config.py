@@ -8,17 +8,23 @@ import os
 
 class Config:
 
-    # ---------------- BOT CORE ----------------
+    # ---------------- BOT CORE ---------------- #
+    
     API_ID = int(os.getenv("API_ID"))
     API_HASH = os.getenv("API_HASH")
     BOT_TOKEN = os.getenv("BOT_TOKEN")
 
     OWNER_ID = int(os.getenv("OWNER_ID"))
 
-    # ---------------- DATABASE ----------------
+    # ---------------- TOOLS CONFIG ---------------- #
+
+    WEATHER_API = os.getenv("WEATHER_API")
+    
+    # ---------------- DATABASE ---------------- #
+    
     MONGO_URI = os.getenv("MONGO_URI")
 
-    # ---------------- CHANNELS ----------------
+    # ---------------- CHANNELS ---------------- #
     _raw_update = os.getenv("UPDATE_CHANNEL", "https://t.me/Anime_UpdatesAU")
 
     if _raw_update.startswith("@"):
@@ -31,7 +37,7 @@ class Config:
     LOG_CHANNEL = os.getenv("LOG_CHANNEL")
 
 
-# ---------------- EXPORT VARIABLES ----------------
+# ---------------- EXPORT VARIABLES ---------------- #
 
 API_ID = Config.API_ID
 API_HASH = Config.API_HASH
@@ -40,6 +46,7 @@ OWNER_ID = Config.OWNER_ID
 MONGO_URI = Config.MONGO_URI
 LOG_CHANNEL = Config.LOG_CHANNEL
 UPDATE_CHANNEL = Config.UPDATE_CHANNEL
+WEATHER_API = Config.WEATHER_API
 
 # ------------------------- #
 # Don't Remove Credit
