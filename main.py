@@ -166,7 +166,7 @@ def get_home_buttons():
     update_url = UPDATE_CHANNEL
 
     if not update_url or not isinstance(update_url, str) or not update_url.startswith("http"):
-        update_url = "https://t.me/Anime_UpdatesAU"
+        update_url = "https://t.me/Aero_Unity"
 
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')],
@@ -363,10 +363,19 @@ bot = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    workers=45,
-    sleep_threshold=18,
+    workers=43,
+    sleep_threshold=16,
     max_concurrent_transmissions=7
 )
+
+# ------------------------- #
+# Don't Remove Credit 
+# Owner @Mr_Mohammed_29
+# ------------------------- #
+
+from tools import register_tools
+
+register_tools(bot)
 
 # ------------------------- #
 # Don't Remove Credit 
@@ -648,7 +657,7 @@ async def set_caption(_, msg):
 
     if len(msg.command) < 2:
         return await msg.reply(
-            "Gɪᴠᴇ Tʜᴇ Cᴀᴘᴛɪᴏɴ\n\nExᴀᴍᴘʟᴇ:- /set_caption Welcome To Jinwoo Rename Bot @Anime_UpdatesAU"
+            "Gɪᴠᴇ Tʜᴇ Cᴀᴘᴛɪᴏɴ\n\nExᴀᴍᴘʟᴇ:- /set_caption Welcome To Jinwoo Rename Bot @Aero_Unity"
         )
 
     cap = msg.text.split(None, 1)[1]
@@ -683,7 +692,7 @@ async def del_caption(_, msg):
 async def set_prefix(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Pʀᴇғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Pʀᴇғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"prefix": text})
@@ -698,7 +707,7 @@ async def set_prefix(_, msg):
 async def set_suffix(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜғғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜғғɪx Lɪᴋᴇ Tʜɪs\n\nExᴀᴍᴘʟᴇ:- /set_prefix @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"suffix": text})
@@ -816,7 +825,7 @@ async def metadata(_, msg):
 async def settitle(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /settitle Encoded By @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /settitle Encoded By @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"title": text})
@@ -826,7 +835,7 @@ async def settitle(_, msg):
 async def setauthor(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴛʜᴏʀ\n\nExᴀᴍᴩʟᴇ:- /setauthor @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴛʜᴏʀ\n\nExᴀᴍᴩʟᴇ:- /setauthor @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"author": text})
@@ -837,7 +846,7 @@ async def setauthor(_, msg):
 async def setartist(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aʀᴛɪꜱᴛ\n\nExᴀᴍᴩʟᴇ:- /setartist @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aʀᴛɪꜱᴛ\n\nExᴀᴍᴩʟᴇ:- /setartist @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"artist": text})
@@ -848,7 +857,7 @@ async def setartist(_, msg):
 async def setaudio(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴅɪᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setaudio @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Aᴜᴅɪᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setaudio @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"audio": text})
@@ -859,7 +868,7 @@ async def setaudio(_, msg):
 async def setsubtitle(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜʙᴛɪᴛʟᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setsubtitle @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Sᴜʙᴛɪᴛʟᴇ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setsubtitle @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"subtitle": text})
@@ -870,7 +879,7 @@ async def setsubtitle(_, msg):
 async def setvideo(_, msg):
 
     if len(msg.command) < 2:
-        return await msg.reply("Gɪᴠᴇ Tʜᴇ Vɪᴅᴇᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setvideo Encoded by @Anime_UpdatesAU")
+        return await msg.reply("Gɪᴠᴇ Tʜᴇ Vɪᴅᴇᴏ Tɪᴛʟᴇ\n\nExᴀᴍᴩʟᴇ:- /setvideo Encoded by @Aero_Unity")
 
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"video": text})
@@ -1208,8 +1217,8 @@ async def choose(_, msg):
 
     buttons = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("📄 𝗗𝗼𝗰𝘂𝗺𝗲𝗻𝘁", callback_data="file"),
-            InlineKeyboardButton("🎬 𝗩𝗶𝗱𝗲𝗼 𝗠𝗼𝗱𝗲", callback_data="video")
+            InlineKeyboardButton("• ᴅᴏᴄᴜᴍᴇɴᴛ ᴍᴏᴅᴇ •", callback_data="file"),
+            InlineKeyboardButton("• ᴠɪᴅᴇᴏ ᴍᴏᴅᴇ", callback_data="video")
         ]
     ])
 
@@ -1222,7 +1231,7 @@ async def choose(_, msg):
     text = f"""
     <b>Fɪʟᴇ Nᴀᴍᴇ:</b> <code>{file_name}</code>
 
- <b>𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲</b>
+ <b>• 𝗦𝗲𝗹𝗲𝗰𝘁 𝗧𝗵𝗲 𝗢𝘂𝘁𝗽𝘂𝘁 𝗙𝗶𝗹𝗲 𝗧𝘆𝗽𝗲 •</b>
     """
 
     if msg.document:
@@ -1684,21 +1693,21 @@ async def cb(_, query: CallbackQuery):
         ⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
 
         Pʀᴏɢʀᴀᴍᴇʀ : <a href="https://t.me/Mr_Mohammed_29">ᴍᴏʜᴀᴍᴍᴇᴅ</a>
-        ꜰᴏᴜɴᴅᴇʀ ᴏꜰ : <a href="https://t.me/Anime_UpdatesAU">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
+        ꜰᴏᴜɴᴅᴇʀ ᴏꜰ : <a href="https://t.me/Aero_Unity">ᴀᴇʀᴏ ᴜɴɪᴛʏ</a>
         Lɪʙʀᴀʀʏ : <a href="https://pypi.org/project/Pyrogram/">Pyʀᴏɢʀᴀᴍ 2.0</a>
         Lᴀɴɢᴜᴀɢᴇ : <a href="https://www.python.org/downloads/">Pʏᴛʜᴏɴ 𝟹</a>
         Dᴀᴛᴀʙᴀsᴇ : <a href="https://www.mongodb.com/">ᴍᴏɴɢᴏ ᴅʙ</a>
-        ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Anime_UpdatesAU">ᴀɴɪᴍᴇ ᴜᴘᴅᴀᴛᴇs</a>
+        ᴄʜᴀɴɴᴇʟ : <a href="https://t.me/Aero_Unity">ᴀᴇʀᴏ ᴜɴɪᴛʏ</a>
         ᴍʏ ꜱᴇʀᴠᴇʀ : <a href="https://t.me/Mr_Mohammed_29">ʙᴏᴛs sᴇʀᴠᴇʀ</a>
-        ʙᴜɪʟᴅ sᴛᴀᴛᴜs : <a href="https://t.me/Anime_UpdatesAU">ᴠ3 [sᴛᴀʙʟᴇ]</a>
+        ʙᴜɪʟᴅ sᴛᴀᴛᴜs : <a href="https://t.me/Aero_Unity">ᴠ3 [sᴛᴀʙʟᴇ]</a>
         """
 
             await query.message.edit_text(
                 text,
 
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="home")],
-                    [InlineKeyboardButton("❌ Cʟᴏsᴇ", callback_data="close")]
+                    [InlineKeyboardButton("• Hᴏᴍᴇ •", callback_data="home")],
+                    [InlineKeyboardButton("• Cʟᴏsᴇ •", callback_data="close")]
                     ]),
                     disable_web_page_preview=True,
                     parse_mode=ParseMode.HTML
@@ -1749,8 +1758,8 @@ async def cb(_, query: CallbackQuery):
             await query.message.edit_text(
                 text,
         reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("🏠 Hᴏᴍᴇ", callback_data="home")],
-                    [InlineKeyboardButton("❌ Cʟᴏsᴇ", callback_data="close")]
+                    [InlineKeyboardButton("• Hᴏᴍᴇ •", callback_data="home")],
+                    [InlineKeyboardButton("• ᴄʟᴏsᴇ •", callback_data="close")]
                 ])
             )
 
