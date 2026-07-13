@@ -250,7 +250,10 @@ def safe_name(name):
 async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
 
     if user_thumb:
-        path = await bot.download_media(user_thumb, file_name=f"thumb_{user_id}.jpg")
+        path = await bot.download_media(
+            user_thumb,
+            file_name=f"thumb_{user_id}.jpg"
+        )
         return path
 
     if is_video:
@@ -260,11 +263,19 @@ async def get_thumbnail(bot, user_thumb, is_video, file_path, user_id):
             (
                 ffmpeg
                 .input(file_path, ss=1)
-                .output(thumb_path, vframes=1)
+                .output(
+                    thumb_path,
+                    vframes=1,
+                    qscale=2,      # High quality thumbnail
+                    format="image2"
+                )
                 .run(overwrite_output=True, quiet=True)
             )
+
             return thumb_path
-        except:
+
+        except Exception as e:
+            print(e)
             return None
 
     return None
@@ -308,7 +319,7 @@ def smart_thumb(path):
         # Else compress
         img = Image.open(path).convert("RGB")
         img.thumbnail((320, 320))
-        img.save(path, "JPEG", quality=80)
+        img.save(path, "JPEG", quality=100, optimize=True)
 
         return path
     except:
