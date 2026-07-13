@@ -171,12 +171,12 @@ def get_home_buttons():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')],
         [
-            InlineKeyboardButton('ᴜᴘᴅᴀᴛᴇs', url=update_url),
-            InlineKeyboardButton('Oɴᴇ Pɪᴇᴄᴇ', url="https://t.me/+t_RfBWnTbqNhYWVl")
+            InlineKeyboardButton('• ᴜᴘᴅᴀᴛᴇs •', url=update_url),
+            InlineKeyboardButton('• Bʟᴇᴀᴄʜ •', url="https://t.me/AU_Bleach")
         ],
         [
-            InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
-            InlineKeyboardButton('sᴏᴜʀᴄᴇ', callback_data='source')
+            InlineKeyboardButton('• ᴀʙᴏᴜᴛ •', callback_data='about'),
+            InlineKeyboardButton('• sᴏᴜʀᴄᴇ •', callback_data='source')
         ]
     ])
 
@@ -1229,7 +1229,7 @@ async def choose(_, msg):
     buttons = InlineKeyboardMarkup([
         [
             InlineKeyboardButton("• ᴅᴏᴄᴜᴍᴇɴᴛ ᴍᴏᴅᴇ •", callback_data="file"),
-            InlineKeyboardButton("• ᴠɪᴅᴇᴏ ᴍᴏᴅᴇ", callback_data="video")
+            InlineKeyboardButton("• ᴠɪᴅᴇᴏ ᴍᴏᴅᴇ •", callback_data="video")
         ]
     ])
 
